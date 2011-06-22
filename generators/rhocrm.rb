@@ -1,9 +1,7 @@
 require 'rubygems'
 require 'rhosync'
 
-#puts File.dirname('rhosync')
-
-#require File.join('rhosync', '..','..','generators','rhosync')
+require File.join('rhosync', '..','..','generators','rhosync')
 require 'templater'
 
 module Rhocrm
@@ -36,6 +34,27 @@ module Rhocrm
     end 
   end
   
+  class AppGenerator < Rhosync::AppGenerator
+    def self.source_root
+      File.join(File.dirname(__FILE__), 'templates', 'application')
+    end
+    
+    desc <<-DESC
+      Generates a new rhosync application.
+      
+      Required:
+        name        - application name
+    DESC
+    
+    first_argument :name, :required => true, :desc => "application name"
+    second_argument :crm, :required => true, :desc => "CRM backend"
+    
+    puts " we have here templates defined : " + templates.inspect
+    
+  end
+    
+    
+    
   class SourceGenerator < BaseGenerator
     def self.source_root
       File.join(File.dirname(__FILE__), 'templates', 'source')
@@ -75,6 +94,6 @@ module Rhocrm
 #    end
   end
   
-#  add :app, AppGenerator
+  add :app, AppGenerator
   add :source, SourceGenerator
 end

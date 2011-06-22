@@ -7,7 +7,7 @@ module Rhocrm
     class Adapter < SourceAdapter 
       def initialize(source,credential)
         super(source, credential)
-        puts "Initializing ORACLE CRM " + self.class.to_s + " SourceAdapter"
+        puts "Initializing ORACLE CRM " + self.class.to_s + " Adapter"
         @oraclecrm_object = "#{self.class.to_s}"
         @soap_client = Savon::Client.new
         # comment the following lines 
@@ -16,8 +16,10 @@ module Rhocrm
           config.log = false
         end
         @soap_client.wsdl.document = File.join(ROOT_PATH, "wsdl/#{self.class.to_s}.wsdl")
-    
-        # initialize fields map
+      end
+      
+      def configure_fields
+        return @fields if @fields
         @fields = get_object_settings['Query_Fields']
         @field_picklists = {}
         static_picklists = get_object_settings['StaticPicklist']
@@ -26,9 +28,9 @@ module Rhocrm
             @field_picklists[element_name] = values
           end
         end
-    
         @object_fields = get_object_settings['ObjectFields']
-        @object_fields = {} if @object_fields == nil 
+        @object_fields = {} if @object_fields == nil
+        @fields 
       end
 
       def get_object_settings
