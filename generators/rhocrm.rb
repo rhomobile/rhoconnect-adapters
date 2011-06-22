@@ -23,15 +23,17 @@ module Rhocrm
       Rhosync.under_score(name)
     end
     
-    def crm_backend
+    def underscore_crm
+      Rhosync.under_score(crm)
+    end
+    
+    def crm_name
       crm
     end
 
     def gem_version
       VERSION
     end 
-    
-    alias_method :module_name, :class_name
   end
   
   class SourceGenerator < BaseGenerator
@@ -43,8 +45,8 @@ module Rhocrm
       Generates a new source adapter based on CRM object.
       
       Required:
-        <name>        - source name(i.e. Account)
-        <CRM base>    - name of the CRM backend
+        name        - source name(i.e. Account)
+        CRM backend - name of the CRM backend
     DESC
 
     first_argument :name, :required => true, :desc => "source name"
@@ -71,7 +73,7 @@ module Rhocrm
 #      template.source = 'source_spec.rb'
 #      template.destination = "spec/sources/#{underscore_name}_spec.rb"
 #    end
-#  end
+  end
   
 #  add :app, AppGenerator
   add :source, SourceGenerator

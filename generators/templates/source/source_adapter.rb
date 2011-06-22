@@ -1,6 +1,6 @@
-require '<%=crm_backend%>'
+require 'rhocrm/<%=underscore_crm%>/adapter'
 
-class <%=class_name%> < Rhocrm::<%=crm_backend%>::Adapter
+class <%=class_name%> < Rhocrm::<%=crm_name%>::Adapter
   def initialize(source,credential)
     super(source, credential)
   end
