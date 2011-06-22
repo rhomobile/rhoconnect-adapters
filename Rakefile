@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'bundler'
+#require 'bundler/setup'
 Bundler.setup(:default, :test)
 require 'bundler/gem_tasks'
 

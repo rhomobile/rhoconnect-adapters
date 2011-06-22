@@ -27,7 +27,7 @@ Gem::Specification.new do |s|
   ]
 
   s.add_dependency('bundler', '~> 1.0')  
-  s.add_dependency('rhosync', '>= 2.1.6')
-  s.add_dependency('rake', '0.9.2')
+  s.add_dependency('rhosync', '>= 3.0.0')
+  s.add_dependency('rake', '~> 0.9.2')
   s.add_dependency('savon', '>= 0.9.2')
 end
