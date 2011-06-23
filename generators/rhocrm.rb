@@ -34,7 +34,7 @@ module Rhocrm
     end 
   end
   
-  class AppGenerator < Rhosync::AppGenerator
+  class AppGenerator < BaseGenerator
     def self.source_root
       File.join(File.dirname(__FILE__), 'templates', 'application')
     end
@@ -44,13 +44,56 @@ module Rhocrm
       
       Required:
         name        - application name
+        CRM backend - name of the CRM backend
     DESC
     
     first_argument :name, :required => true, :desc => "application name"
     second_argument :crm, :required => true, :desc => "CRM backend"
     
-    puts " we have here templates defined : " + templates.inspect
+    # purpose of this call is to invoke all templates in 
+    # the Rhosync::Generator except the :application - which is overriden here
+    # after app is generated , generate 4 standard sources
+    invoke :rhosync_app do |rhosync_gen| 
+      app_template = nil
+      rhosync_gen.templates.each do |t|
+        if t.name == :application
+          app_template = t
+          break
+        end
+      end
+      rhosync_gen.templates.delete(app_template)
+      rhosync_gen.new(destination_root, {}, name)
+    end
+    template :application do |template|
+      template.source = 'application.rb'
+      template.destination = "#{name}/application.rb"
+    end
     
+    def self.add_specific_templates(tname)
+      puts " we are here and #{tname}"
+      template tname do |t|
+         yield t
+      end
+      puts "template is added" + templates.inspect
+    end
+    
+    def after_run
+      Rhocrm.run_cli(File.join(destination_root,name), 'rhocrm', Rhocrm::VERSION, ['source', 'account', crm])
+    end
+    
+    # after app is generated , generate 4 standard sources
+    #invoke :source do |source_gen|
+    #  source_gen.new(File.join(destination_root,name),   {}, 'account', crm)
+    #end
+    #invoke :source do |source_gen|
+    #  source_gen.new(destination_root, {}, 'contact', crm)
+    #end
+    #invoke :source do |source_gen|
+    #  source_gen.new(destination_root, {}, 'lead', crm)
+    #end
+    #invoke :source do |source_gen|
+    #  source_gen.new(destination_root, {}, 'opportunity', crm)
+    #end
   end
     
     
@@ -94,6 +137,12 @@ module Rhocrm
 #    end
   end
   
+  add :rhosync_app, Rhosync::AppGenerator
   add :app, AppGenerator
   add :source, SourceGenerator
+end
+
+Rhocrm::AppGenerator.add_specific_templates :copy_wsdl do |template|
+  template.source = File.join('platform','oracle_on_demand','wsdl','Picklist.wsdl')
+  template.destination = 'wsdl/Picklist.wsdl'
 end

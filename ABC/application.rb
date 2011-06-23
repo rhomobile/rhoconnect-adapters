@@ -1,4 +1,4 @@
-class Application < Rhocrm::<%=crm_name%>::Application
+class Application < Rhocrm::OracleOnDemand::Application
   class << self
     def authenticate(username,password,session)
       super(username, password, session) 
