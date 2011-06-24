@@ -31,6 +31,12 @@ module Rhocrm
 
     def gem_version
       VERSION
+    end
+    
+    def configure_gemfile
+      gem_file = File.join("#{name}",'Gemfile')
+      doc = "\ngem 'rhocrm', '#{gem_version}'\n"
+      File.open(gem_file, 'a') {|f| f.write(doc) }
     end 
   end
   
@@ -69,12 +75,15 @@ module Rhocrm
       template.destination = "#{name}/application.rb"
     end
     template :vendor_application do |template|
-      template.source = File.join('..','vendor',"#{underscore_crm}",'application.rb')
+      template.source = File.join('..','..','vendor',"#{underscore_crm}",'application.rb')
       template.destination = File.join("#{name}",'vendor',"#{underscore_crm}",'application.rb')
     end
     
-    def self.add_vendor_templates(tname,crm_name)
-      if crm_name == underscore_crm
+    def self.add_vendor_templates(tname,vendor)
+      # ARGV[2] is the CRM backend name
+      # we only instantiating relevant
+      # vendor templates
+      if Rhosync.under_score(ARGV[2]) == "#{vendor}"
         template tname do |t|
           yield t,name,crm
         end
@@ -82,6 +91,7 @@ module Rhocrm
     end
     
     def after_run
+      configure_gemfile
       Rhocrm.run_cli(File.join(destination_root,name), 'rhocrm', Rhocrm::VERSION, ['source', 'account', crm])
     end
   end
@@ -120,18 +130,23 @@ module Rhocrm
         file.write envs.to_yaml[3..-1]
       end
     end
-    template :vendor_adaptor do |template|
-      template.source = File.join('..','vendor',"#{underscore_crm}",'adaptor.rb')
-      template.destination = File.join("#{name}",'vendor',"#{underscore_crm}",'adaptor.rb')
+    template :vendor_adapter do |template|
+      template.source = File.join('..','..','vendor',"#{underscore_crm}",'adapter.rb')
+      template.destination = File.join(@destination_root,'vendor',"#{underscore_crm}",'adapter.rb')
     end
     
-    def self.add_vendor_templates(tname,crm_name)
-      if crm_name == underscore_crm
+    def self.add_vendor_templates(tname,vendor)
+      # ARGV[2] is the CRM backend name
+      # we only instantiating relevant
+      # vendor templates
+      if Rhosync.under_score(ARGV[2]) == "#{vendor}"
         template tname do |t|
           yield t,name,crm
         end
       end
     end
+    
+#    Dir[File.join(File.dirname(__FILE__),'vendor','*','templates.rb')].each { |vendor_templates| load vendor_templates }
 
 #    template :source_spec do |template|
 #      template.source = 'source_spec.rb'
@@ -139,7 +154,7 @@ module Rhocrm
 #    end
   end
   
-  add :rhosync_app, Rhosync::AppGenerator
+  add_private :rhosync_app, Rhosync::AppGenerator
   add :app, AppGenerator
   add :source, SourceGenerator
 end

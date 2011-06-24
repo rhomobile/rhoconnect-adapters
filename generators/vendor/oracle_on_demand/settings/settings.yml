@@ -1,0 +1,9 @@
+:test: 
+  :oraclecrm_service_url: https://secure-ausomxkwa.crmondemand.com/Services/Integration
+  :username: RHOMOB/max@rhomobile.com
+  :password: rh0passw0rd
+:production: 
+  :oraclecrm_service_url: https://secure-ausomxkwa.crmondemand.com/Services/Integration
+:development: 
+  :oraclecrm_service_url: https://secure-ausomxkwa.crmondemand.com/Services/Integration
+
