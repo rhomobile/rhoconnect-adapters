@@ -1,0 +1,69 @@
+Query_Fields:
+    # This is just a sample list of fields 
+    # that are used in QueryPage
+    Id:
+      Label: Id
+      Type: id
+    MrMrs:
+      Label: Salutation
+      Type: Picklist
+    LeadFirstName:
+      Label: First Name
+      Type: textinput
+    LeadLastName:
+      Label: Last Name
+      Type: textinput
+    AccountName:
+      Label: Account Name
+      Type: object
+      Object: Account
+    CellularPhone:
+      Label: Cell Phone
+      Type: textinput
+    LeadEmail:
+      Label: Email
+      Type: textinput
+    Company:
+      Label: Company
+      Type: textinput
+    JobTitle:
+      Label: Job Title
+      Type: textinput
+    PotentialRevenue:
+      Label: Potential Revenue
+      Type: textinput
+    EstimatedCloseDate:
+      Label: Estimated Close Date
+      Type:  textinput
+    Country:
+      Label: Country
+      Type: Picklist
+    Province:
+      Label: State/Province
+      Type: textinput
+    City:
+      Label: City
+      Type: textinput
+    StreetAddress:
+      Label: Street Address
+      Type: textinput  
+NonQuery_MappingWS_Fields:
+    # these are the fields that are returned by Mapping WebService
+    # but can not be used in QueryPage
+    ChannelAccountManager:
+    ObjectiveObjectiveName:
+    ModifiedbyEmailAddress:
+    CreatedbyEmailAddress:
+    LastUpdated:
+    LeadId:
+    PrincipalPartnerName:
+    PrincipalPartnerChannelManagerAlias:
+    OriginatingPartnerName:
+    OriginatingPartnerChannelManagerAlias:
+StaticPicklist:
+    # these are fields that are Picklists
+    # but Oracle returns an error
+ObjectFields:
+    # these are reference fields to the other objects
+    AccountName:
+

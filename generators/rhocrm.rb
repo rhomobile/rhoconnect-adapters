@@ -69,7 +69,7 @@ module Rhocrm
       template.destination = "#{name}/application.rb"
     end
     
-    def self.add_platform_templates(tname)
+    def self.add_vendor_templates(tname)
       template tname do |t|
          yield t,name,crm
       end
@@ -147,12 +147,18 @@ module Rhocrm
 end
 
 Rhocrm::AppGenerator.add_vendor_templates :picklist_wsdl do |template,name,crm|
-  template.source = File.join('..','platform','oracle_on_demand','wsdl','Picklist.wsdl')
+  template.source = File.join('..','..','vendor','oracle_on_demand','wsdl','Picklist.wsdl')
   template.destination = File.join("#{name}", 'wsdl', 'Picklist.wsdl')
 end
 
 Rhocrm::SourceGenerator.add_vendor_templates :object_wsdl do |template,name,crm|
   class_name = name.gsub('-', '_').camel_case
-  template.source = File.join('..','platform','oracle_on_demand','wsdl',"#{class_name}.wsdl")
-  template.destination = File.join('wsdl', "#{class_name}.wsdl")
+  template.source = File.join('..','..','vendor','oracle_on_demand','wsdl',"#{class_name}.wsdl")
+  template.destination = File.join('vendor','oracle_on_demand','wsdl', "#{class_name}.wsdl")
+end
+
+Rhocrm::SourceGenerator.add_vendor_templates :object_yml do |template,name,crm|
+  class_name = name.gsub('-', '_').camel_case
+  template.source = File.join('..','..','vendor','oracle_on_demand','settings',"#{class_name}.yml")
+  template.destination = File.join('vendor','oracle_on_demand','settings', "#{class_name}.yml")
 end

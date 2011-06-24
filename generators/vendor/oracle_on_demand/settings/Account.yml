@@ -1,0 +1,88 @@
+Query_Fields:
+    # This is just a sample list of fields 
+    # that are used in QueryPage
+    Id:
+        Label: Id
+        Type: id
+    AccountName: 
+        Label: Name
+        Type: textinput
+    AccountType:
+        Label: Type
+        Type: Picklist
+    Priority:
+        Label: Priority
+        Type: Picklist
+    Status: 
+        Label: Status
+        Type: Picklist
+    Description: 
+        Label: Description
+        Type: textarea
+    MainPhone: 
+        Label: Main Phone
+        Type: textinput
+    WebSite: 
+        Label: Web Site
+        Type: textinput
+    NumberEmployees: 
+        Label: Number Of Employees
+        Type: textinput
+    AnnualRevenues: 
+        Label: Annual Revenues
+        Type: textinput
+    Industry:
+        Label: Industry
+        Type: Picklist
+    Region:
+        Label: Region
+        Type: Picklist
+    CallFrequency: 
+        Label: Call Frequency
+        Type: Picklist
+    InfluenceType: 
+        Label: Influence Type
+        Type: Picklist
+    Route: 
+        Label: Route
+        Type: Picklist
+        
+NonQuery_MappingWS_Fields:
+    # these are the fields that are returned by Mapping WebService
+    # but can not be used in QueryPage
+    PartnerOrgStatus:
+    ModifiedbyEmailAddress:
+    CreatedbyEmailAddress:
+    AccountId:
+    OwnerPartnerName:
+    OwnerPartnerChannelManagerAlias:
+    PrincipalPartnerName:
+    PrincipalPartnerChannelManagerAlias:
+    OriginatingPartnerName:
+    OriginatingPartnerChannelManagerAlias:
+StaticPicklist:
+    # these are fields that are Picklists
+    # but Oracle returns an error,
+    # so we define it manually here
+    Industry:
+        - Automotive
+        - Consumer Goods
+        - Energy
+        - Financial Services
+        - High Technology
+        - Insurance
+        - Manufacturing
+        - Media & Entertainment
+        - Medical
+        - Metals & Mining
+        - Non-profit
+        - Other
+        - Pharmaceuticals
+        - Public Sector
+        - Real Estate
+        - Retail
+        - Services
+        - Telecommunication
+        - Travel & Transportation
+ObjectFields:
+    # these are reference fields to the other objects
