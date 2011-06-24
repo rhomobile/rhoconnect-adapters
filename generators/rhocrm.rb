@@ -68,30 +68,22 @@ module Rhocrm
       template.source = 'application.rb'
       template.destination = "#{name}/application.rb"
     end
+    template :vendor_application do |template|
+      template.source = File.join('..','vendor',"#{underscore_crm}",'application.rb')
+      template.destination = File.join("#{name}",'vendor',"#{underscore_crm}",'application.rb')
+    end
     
-    def self.add_vendor_templates(tname)
-      template tname do |t|
-         yield t,name,crm
+    def self.add_vendor_templates(tname,crm_name)
+      if crm_name == underscore_crm
+        template tname do |t|
+          yield t,name,crm
+        end
       end
     end
     
     def after_run
       Rhocrm.run_cli(File.join(destination_root,name), 'rhocrm', Rhocrm::VERSION, ['source', 'account', crm])
     end
-    
-    # after app is generated , generate 4 standard sources
-    #invoke :source do |source_gen|
-    #  source_gen.new(File.join(destination_root,name),   {}, 'account', crm)
-    #end
-    #invoke :source do |source_gen|
-    #  source_gen.new(destination_root, {}, 'contact', crm)
-    #end
-    #invoke :source do |source_gen|
-    #  source_gen.new(destination_root, {}, 'lead', crm)
-    #end
-    #invoke :source do |source_gen|
-    #  source_gen.new(destination_root, {}, 'opportunity', crm)
-    #end
   end
     
     
@@ -128,13 +120,19 @@ module Rhocrm
         file.write envs.to_yaml[3..-1]
       end
     end
-    
-    def self.add_vendor_templates(tname)
-      template tname do |t|
-         yield t,name,crm
-      end
+    template :vendor_adaptor do |template|
+      template.source = File.join('..','vendor',"#{underscore_crm}",'adaptor.rb')
+      template.destination = File.join("#{name}",'vendor',"#{underscore_crm}",'adaptor.rb')
     end
     
+    def self.add_vendor_templates(tname,crm_name)
+      if crm_name == underscore_crm
+        template tname do |t|
+          yield t,name,crm
+        end
+      end
+    end
+
 #    template :source_spec do |template|
 #      template.source = 'source_spec.rb'
 #      template.destination = "spec/sources/#{underscore_name}_spec.rb"
@@ -146,19 +144,5 @@ module Rhocrm
   add :source, SourceGenerator
 end
 
-Rhocrm::AppGenerator.add_vendor_templates :picklist_wsdl do |template,name,crm|
-  template.source = File.join('..','..','vendor','oracle_on_demand','wsdl','Picklist.wsdl')
-  template.destination = File.join("#{name}", 'wsdl', 'Picklist.wsdl')
-end
-
-Rhocrm::SourceGenerator.add_vendor_templates :object_wsdl do |template,name,crm|
-  class_name = name.gsub('-', '_').camel_case
-  template.source = File.join('..','..','vendor','oracle_on_demand','wsdl',"#{class_name}.wsdl")
-  template.destination = File.join('vendor','oracle_on_demand','wsdl', "#{class_name}.wsdl")
-end
-
-Rhocrm::SourceGenerator.add_vendor_templates :object_yml do |template,name,crm|
-  class_name = name.gsub('-', '_').camel_case
-  template.source = File.join('..','..','vendor','oracle_on_demand','settings',"#{class_name}.yml")
-  template.destination = File.join('vendor','oracle_on_demand','settings', "#{class_name}.yml")
-end
+include Rhocrm
+Dir[File.join(File.dirname(__FILE__),'vendor','*','templates.rb')].each { |vendor_templates| load vendor_templates }

@@ -1,0 +1,1 @@
+require 'vendor/oracle_on_demand/adapter'

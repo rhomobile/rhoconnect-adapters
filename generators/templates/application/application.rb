@@ -1,3 +1,5 @@
+require 'vendor/<%=underscore_crm%>/application'
+
 class Application < Rhocrm::<%=crm_name%>::Application
   class << self
     def authenticate(username,password,session)

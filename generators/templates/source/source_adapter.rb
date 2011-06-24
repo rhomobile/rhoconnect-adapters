@@ -1,4 +1,4 @@
-require 'rhocrm/<%=underscore_crm%>/adapter'
+require 'vendor/<%=underscore_crm%>/adapter'
 
 class <%=class_name%> < Rhocrm::<%=crm_name%>::Adapter
   def initialize(source,credential)

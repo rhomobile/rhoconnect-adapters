@@ -1,13 +1,14 @@
-require 'rhosync'
+require 'rhocrm'
 require 'rest-client'
 require 'savon'
+
 
 module Rhocrm
   module OracleOnDemand
     class Adapter < SourceAdapter 
       def initialize(source,credential)
         super(source, credential)
-        puts "Initializing ORACLE CRM " + self.class.to_s + " Adapter"
+        puts "Initializing ORACLE CRM " + self.class.to_s + " SourceAdapter"
         @oraclecrm_object = "#{self.class.to_s}"
         @soap_client = Savon::Client.new
         # comment the following lines 
@@ -15,12 +16,13 @@ module Rhocrm
         Savon.configure do |config|
           config.log = false
         end
-        @soap_client.wsdl.document = File.join(ROOT_PATH, "wsdl/#{self.class.to_s}.wsdl")
+        @soap_client.wsdl.document = File.join(ROOT_PATH, 'vendor','oracle_on_demand','wsdl', "#{@oraclecrm_object}.wsdl")
       end
       
       def configure_fields
-        return @fields if @fields
+        # initialize fields map
         @fields = get_object_settings['Query_Fields']
+    
         @field_picklists = {}
         static_picklists = get_object_settings['StaticPicklist']
         if static_picklists != nil
@@ -28,16 +30,17 @@ module Rhocrm
             @field_picklists[element_name] = values
           end
         end
+    
         @object_fields = get_object_settings['ObjectFields']
         @object_fields = {} if @object_fields == nil
-        @fields 
+        
+        @fields
       end
 
       def get_object_settings
         return @object_settings if @object_settings
         begin
-          file = YAML.load_file(File.join(ROOT_PATH,'settings','crmobjects.yml'))
-          @settings = file[@oraclecrm_object]
+          @object_settings = YAML.load_file(File.join(ROOT_PATH,'vendor','oracle_on_demand','settings',"#{@oraclecrm_object}.yml"))
         rescue Exception => e
           puts "Error opening CRMObjects settings file: #{e}"
           puts e.backtrace.join("\n")
@@ -48,9 +51,7 @@ module Rhocrm
       def get_picklists
         begin  
           nonquery_fields = get_object_settings['NonQuery_MappingWS_Fields']
-          @fields.each do |field|
-            element_name = field[0]
-            element_def = field[1]
+          @fields.each do |element_name, element_def|
             # use object field only of it has not been excluded
             # explicitly in the object's settings
             next if nonquery_fields.has_key? element_name
@@ -76,7 +77,7 @@ module Rhocrm
         return picklist if picklist.size != 0
     
         picklist_client = Savon::Client.new
-        picklist_client.wsdl.document = File.join(ROOT_PATH, "wsdl/Picklist.wsdl")
+        picklist_client.wsdl.document = File.join(ROOT_PATH,'vendor','oracle_on_demand','wsdl','Picklist.wsdl')
         password = Store.get_value("#{current_user.login}:password")
         # credentials will be passed with every request (stateless)
         picklist_client.wsse.credentials("#{current_user.login}", password)
@@ -157,8 +158,7 @@ module Rhocrm
         #   "2"=>{"name"=>"Best", "industry"=>"Software"}
         # }
         request_fields = {}
-        @fields.each do |f|
-          element_name = f[0]
+        @fields.each do |element_name,element_def|
           request_fields[element_name] = ''
         end
         request_body = {
@@ -194,9 +194,11 @@ module Rhocrm
               records.each do |oracle_rec|
                 id_field = oracle_rec['Id']
                 converted_record = {}
+                #converted_record['id'] =  id_field
                 # grab only the allowed fields 
-                @fields.each do |field|
-                  converted_record[field[0]] = "#{oracle_rec[field[0]]}"
+                # and map oracle field names into RhoSync field names
+                @fields.each do |element_name,element_def|
+                  converted_record[element_name] = "#{oracle_rec[element_name]}"
                 end
                 @result[id_field] = converted_record
               end
@@ -222,10 +224,7 @@ module Rhocrm
         model_name = "" + @oraclecrm_object
         model_name[0] = model_name[0,1].downcase
         record_sym = '@' + "#{model_name}"
-        @fields.each do |f|
-          element_name = f[0]
-          element_def = f[1]
-      
+        @fields.each do |element_name,element_def|
           next if element_name == 'Id'
       
           # 1) - read-only show fields
@@ -304,8 +303,7 @@ module Rhocrm
         # (has the image_uri attribute), then a blob will be provided
         created_object_id = nil
         request_fields = {}
-        @fields.each do |f|
-          element_name = f[0]
+        @fields.each do |element_name, element_def|
           field_value = create_hash[element_name]
           if field_value != nil and element_name != 'Id'
             request_fields[element_name] = field_value
@@ -334,8 +332,7 @@ module Rhocrm
         updated_object_id = nil
         request_fields = {}
 
-        @fields.each do |f|
-          element_name = f[0]
+        @fields.each do |element_name,element_def|
           field_value = update_hash[element_name]
           if field_value != nil
             request_fields[element_name] = field_value
@@ -368,8 +365,7 @@ module Rhocrm
         deleted_object_id = nil
         request_fields = {}
 
-        @fields.each do |f|
-          element_name = f[0]
+        @fields.each do |element_name,element_def|
           field_value = delete_hash[element_name]
           if field_value != nil
             request_fields[element_name] = field_value
