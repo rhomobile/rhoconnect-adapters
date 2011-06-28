@@ -1,0 +1,18 @@
+Query_Fields:
+    # This is just a sample list of fields 
+    # that are used in QueryPage
+    Id:
+        Label: Id
+        Type: id
+        
+NonQuery_MappingWS_Fields:
+    # these are the fields that are returned by Mapping WebService
+    # but can not be used in QueryPage
+
+StaticPicklist:
+    # these are fields that are Picklists
+    # but Oracle returns an error,
+    # so we define it manually here
+    
+ObjectFields:
+    # these are reference fields to the other objects

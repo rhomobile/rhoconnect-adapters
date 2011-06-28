@@ -8,6 +8,20 @@ module Rhocrm
   extend Templater::Manifold
   extend Rhocrm
   
+  class << self 
+    attr_reader :registered_backends
+    attr_reader :standard_sources
+    
+    def valid_backend?(name)
+      registered_backends.index(name) != nil
+    end
+    def standard_source?(name)
+      standard_sources.index(name) != nil
+    end
+  end
+  @registered_backends = ['OracleOnDemand','MSDynamics'];
+  @standard_sources = ['Account','Contact','Opportunity','Lead'];
+  
   desc <<-DESC
     Rhocrm generator
   DESC
@@ -53,6 +67,13 @@ module Rhocrm
         yield t,name,crm
       end
     end
+    
+    def initialize(generator_name, generator_class, *arguments)
+      super(generator_name, generator_class, *arguments)
+      if not Rhocrm.valid_backend?(arguments[1])
+        raise Templater::ArgumentError.new("#{arguments[1]} : CRM backend is not supported")
+      end 
+    end
   end
   
   class AppGenerator < BaseGenerator
@@ -61,15 +82,15 @@ module Rhocrm
     end
     
     desc <<-DESC
-      Generates a new rhosync application.
+      Generates a new rhosync CRM application.
       
       Required:
         name        - application name
-        CRM backend - name of the CRM backend
+        CRM backend - supported CRM backend #{Rhocrm.registered_backends.inspect}
     DESC
     
     first_argument :name, :required => true, :desc => "application name"
-    second_argument :crm, :required => true, :desc => "CRM backend"
+    second_argument :crm, :required => true, :desc => "supported CRM backend #{Rhocrm.registered_backends.inspect}"
     
     # purpose of this call is to invoke all templates in 
     # the Rhosync::Generator except the :application - which is overriden here
@@ -82,11 +103,17 @@ module Rhocrm
       template.source = File.join('..','..','vendor',"#{underscore_crm}",'application.rb')
       template.destination = File.join("#{name}",'vendor',"#{underscore_crm}",'application.rb')
     end
+    template :vendor_adapter do |template|
+      template.source = File.join('..','..','vendor',"#{underscore_crm}",'adapter.rb')
+      template.destination = File.join("#{name}",'vendor',"#{underscore_crm}",'adapter.rb')
+    end
     
     def after_run
       configure_gemfile
-      # after app is generated , generate 4 standard sources
-      Rhocrm.run_cli(File.join(destination_root,name), 'rhocrm', Rhocrm::VERSION, ['source', 'account', crm])
+      # after app is generated , generate the standard sources
+      Rhocrm.standard_sources.each do |source|
+        Rhocrm.run_cli(File.join(destination_root,name), 'rhocrm', Rhocrm::VERSION, ['source', "#{source}", crm])
+      end
     end
   end
      
@@ -100,11 +127,11 @@ module Rhocrm
       
       Required:
         name        - source name(i.e. Account)
-        CRM backend - name of the CRM backend
+        CRM backend - supported CRM backend #{Rhocrm.registered_backends.inspect}
     DESC
 
     first_argument :name, :required => true, :desc => "source name"
-    second_argument :crm, :required => true, :desc => "CRM backend name"
+    second_argument :crm, :required => true, :desc => "supported CRM backend #{Rhocrm.registered_backends.inspect}"
     
     invoke_generator :rhosync_source, [:source]
     template :source do |template|
@@ -122,10 +149,6 @@ module Rhocrm
         end
         file.write envs.to_yaml[3..-1]
       end
-    end
-    template :vendor_adapter do |template|
-      template.source = File.join('..','..','vendor',"#{underscore_crm}",'adapter.rb')
-      template.destination = File.join(@destination_root,'vendor',"#{underscore_crm}",'adapter.rb')
     end
   end
   
