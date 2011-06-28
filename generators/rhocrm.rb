@@ -53,6 +53,19 @@ module Rhocrm
       File.open(gem_file, 'a') {|f| f.write(doc) }
     end
     
+    def self.check_valid_backend(name)
+      if not Rhocrm.valid_backend?(name)
+        puts "Requested CRM backend '#{name}' is not supported."
+        puts ''
+        puts 'List of supported backends:'
+        Rhocrm.registered_backends.each do |crm|
+          puts "    - #{crm}"
+        end
+        puts ''
+        exit
+      end
+    end
+    
     def self.invoke_generator(gen_name, excludes = nil)
       invoke gen_name do |ext_gen| 
         if not excludes.nil?
@@ -70,9 +83,7 @@ module Rhocrm
     
     def initialize(generator_name, generator_class, *arguments)
       super(generator_name, generator_class, *arguments)
-      if not Rhocrm.valid_backend?(arguments[1])
-        raise Templater::ArgumentError.new("#{arguments[1]} : CRM backend is not supported")
-      end 
+      Rhocrm::BaseGenerator.check_valid_backend(arguments[1])
     end
   end
   
@@ -91,6 +102,8 @@ module Rhocrm
     
     first_argument :name, :required => true, :desc => "application name"
     second_argument :crm, :required => true, :desc => "supported CRM backend #{Rhocrm.registered_backends.inspect}"
+    #third_argument :__bare, :required => false, :desc => "generate CRM application without standard sources", :as => :boolean
+    option :bare, :default => false, :desc => "generate CRM application without standard sources", :as => :boolean
     
     # purpose of this call is to invoke all templates in 
     # the Rhosync::Generator except the :application - which is overriden here
@@ -111,8 +124,11 @@ module Rhocrm
     def after_run
       configure_gemfile
       # after app is generated , generate the standard sources
-      Rhocrm.standard_sources.each do |source|
-        Rhocrm.run_cli(File.join(destination_root,name), 'rhocrm', Rhocrm::VERSION, ['source', "#{source}", crm])
+      # but only if --bare is not specified
+      if not bare
+        Rhocrm.standard_sources.each do |source|
+          Rhocrm.run_cli(File.join(destination_root,name), 'rhocrm', Rhocrm::VERSION, ['source', "#{source}", crm])
+        end
       end
     end
   end
@@ -133,7 +149,7 @@ module Rhocrm
     first_argument :name, :required => true, :desc => "source name"
     second_argument :crm, :required => true, :desc => "supported CRM backend #{Rhocrm.registered_backends.inspect}"
     
-    invoke_generator :rhosync_source, [:source]
+    invoke_generator :rhosync_source, [:source, :source_spec]
     template :source do |template|
       template.source = 'source_adapter.rb'
       template.destination = "sources/#{underscore_name}.rb"
@@ -149,6 +165,15 @@ module Rhocrm
         end
         file.write envs.to_yaml[3..-1]
       end
+    end
+    template :source_spec do |template|
+      source_filename = File.join('..','..','vendor',underscore_crm,'spec',"#{underscore_name}_spec.rb")
+      if File.exists? File.join(File.dirname(__FILE__), source_filename)
+        template.source = source_filename
+      else
+        template.source = 'source_spec.rb'
+      end
+      template.destination = "spec/sources/#{underscore_name}_spec.rb"
     end
   end
   

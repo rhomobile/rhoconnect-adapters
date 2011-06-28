@@ -4,12 +4,11 @@ describe "Contact" do
   it_should_behave_like "SpecHelper" do
   
     before(:each) do
-      settings_file = File.join('settings', 'settings.yml')
-      settings = YAML.load_file(settings_file) if settings_file and File.exist?(settings_file)
+      settings = Application.get_settings
       sample_data_file = File.join('spec','sample_data.yml')
       @sample_data = YAML.load_file(sample_data_file)['Contact'] if sample_data_file and File.exist?(sample_data_file)
-      setup_test_for Contact,settings[:test][:username]
-      Application.authenticate(settings[:test][:username],settings[:test][:password],"")
+      setup_test_for Contact,settings[:username]
+      Application.authenticate(settings[:username],settings[:password],"")
     end
 
     before(:each) do
