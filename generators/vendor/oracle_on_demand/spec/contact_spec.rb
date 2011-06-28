@@ -5,7 +5,7 @@ describe "Contact" do
   
     before(:each) do
       settings = Application.get_settings
-      sample_data_file = File.join('spec','sample_data.yml')
+      sample_data_file = File.join('vendor','oracle_on_demand','spec_data','Contact.yml')
       @sample_data = YAML.load_file(sample_data_file)['Contact'] if sample_data_file and File.exist?(sample_data_file)
       setup_test_for Contact,settings[:username]
       Application.authenticate(settings[:username],settings[:password],"")

@@ -1,0 +1,8 @@
+Account:
+  AccountName: ACME Co.
+  AccountType: Partner
+  Priority: High
+  MainPhone: (333)-333-3333
+  WebSite: www.acme.com
+  NumberEmployees: 100
+  AnnualRevenues: 500000

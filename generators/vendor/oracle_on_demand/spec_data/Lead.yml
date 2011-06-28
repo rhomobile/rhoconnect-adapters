@@ -1,0 +1,14 @@
+Lead:
+  MrMrs: Mr.
+  LeadFirstName: John
+  LeadLastName: Smith
+  CellularPhone: (555)111-1111
+  Email: john.smith@example.com
+  Company: ABC Company
+  JobTitle: Sales Assistant
+  PotentialRevenue: $40000
+  EstimatedCloseDate: 5/15/2011
+  Country: USA
+  Province: CA
+  City: San Francisco
+  StreetAddress: 111 Market St.
