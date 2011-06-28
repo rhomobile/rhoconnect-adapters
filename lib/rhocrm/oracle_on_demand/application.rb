@@ -8,7 +8,7 @@ module Rhocrm
         def authenticate(username,password,session)
           success = false
           begin
-            oraclecrm_url = Application.get_settings[:service_url]
+            oraclecrm_url = Application.get_settings[:oraclecrm_service_url]
             request_url = oraclecrm_url + "?command=" + 'login'
         
             # here we just verifying the credetials
@@ -49,6 +49,10 @@ module Rhocrm
             file = YAML.load_file(File.join(ROOT_PATH,'settings','settings.yml'))
             env = (ENV['RHO_ENV'] || :development).to_sym
             @settings = file[env]
+            
+            # vendor-specific settings
+            file = YAML.load_file(File.join(ROOT_PATH,'vendor','oracle_on_demand','settings','settings.yml'))
+            @settings.merge!(file[env])
           rescue Exception => e
             puts "Error opening settings file: #{e}"
             puts e.backtrace.join("\n")
