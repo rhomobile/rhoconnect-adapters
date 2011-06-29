@@ -6,7 +6,6 @@ module Rhocrm
     class Application < Rhosync::Base
       class << self
         def authenticate(username,password,session)
-          success = false
           begin
             oraclecrm_url = Application.get_settings[:oraclecrm_service_url]
             request_url = oraclecrm_url + "?command=" + 'login'
@@ -34,14 +33,11 @@ module Rhocrm
                 raise "LOGIN/PASSWORD ERROR : #{response.code} : #{response}" 
               end  
             end
-            success = true
           rescue Exception => e
-            puts "LOGIN ERROR"
-            puts e.inspect
-            puts e.backtrace.join("\n")
-            raise e
+            warn "Can't authenticate user #{username}: " + e.inspect
+            return false
           end
-          success
+          true
         end
         def get_settings
           return @settings if @settings

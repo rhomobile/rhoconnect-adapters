@@ -4,6 +4,11 @@ Rhocrm::AppGenerator.add_vendor_templates :template, :settings_yml do |template,
   template.destination = File.join("#{name}", 'vendor','oracle_on_demand','settings','settings.yml')
 end
 
+Rhocrm::AppGenerator.add_vendor_templates :file, :application_spec do |file,name,crm|
+  template.source = File.join('..','..','vendor','oracle_on_demand','spec','application_spec.rb')
+  template.destination = File.join("#{name}", 'spec','application_spec.rb')
+end
+
 Rhocrm::SourceGenerator.add_vendor_templates :file, :object_yml do |file,name,crm|
   source_name = name.gsub('-', '_').camel_case
   source_filename = File.join('..','..','vendor','oracle_on_demand','settings',"#{source_name}.yml")

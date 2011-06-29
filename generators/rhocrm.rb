@@ -107,10 +107,14 @@ module Rhocrm
     
     # purpose of this call is to invoke all templates in 
     # the Rhosync::Generator except the :application - which is overriden here
-    invoke_generator :rhosync_app, [:application]
+    invoke_generator :rhosync_app, [:application, :spec_helper]
     template :application do |template|
       template.source = 'application.rb'
       template.destination = "#{name}/application.rb"
+    end
+    template :spec_helper do |template|
+      template.source = 'spec/spec_helper.rb'
+      template.destination = "#{name}/spec/spec_helper.rb"
     end
     template :vendor_application do |template|
       template.source = File.join('..','..','vendor',"#{underscore_crm}",'application.rb')
