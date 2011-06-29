@@ -48,14 +48,11 @@ module Rhocrm
           begin
             file = YAML.load_file(File.join(ROOT_PATH,'settings','settings.yml'))
             env = (ENV['RHO_ENV'] || :development).to_sym
-            puts " env is : #{env} "
             @settings = file[env]
             
             # vendor-specific settings
             file = YAML.load_file(File.join(ROOT_PATH,'vendor','oracle_on_demand','settings','settings.yml'))
             @settings.merge!(file[env])
-            puts " settings are : " + @settings.inspect
-            @settings
           rescue Exception => e
             puts "Error opening settings file: #{e}"
             puts e.backtrace.join("\n")

@@ -1,0 +1,4 @@
+<%=class_name%>:
+    # put all of your sample data for specs here in the form of hash
+    # { field_name => sample_field_value }
+    
