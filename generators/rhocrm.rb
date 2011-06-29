@@ -171,7 +171,7 @@ module Rhocrm
       end
     end
     template :source_spec do |template|
-      source_filename = File.join('..','..','vendor',underscore_crm,'spec',"#{underscore_name}_spec.rb")
+      source_filename = File.join('..','..','vendor',underscore_crm,'spec','sources',"#{underscore_name}_spec.rb")
       if File.exists? File.join(SourceGenerator.source_root, source_filename)
         template.source = source_filename
       else
