@@ -37,8 +37,8 @@ shared_examples_for "SpecHelper" do
   
   before(:all) do
     settings = Application.get_settings
-    @test_user = settings[:username]
-    @test_password = settings[:password]
+    @test_user = "#{settings[:test_user]}"
+    @test_password = "#{settings[:test_password]}"
     puts "Specify test user before running these specs" unless @test_user.length > 0
     puts "Specify test user password before running these specs" unless @test_password.length > 0
   end

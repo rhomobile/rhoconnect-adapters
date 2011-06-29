@@ -1,7 +1,7 @@
 :test: 
   :oraclecrm_service_url: https://secure-ausomxkwa.crmondemand.com/Services/Integration
-  :username: sample_user
-  :password: sample_password
+  :test_user: sample_user
+  :test_password: sample_password
 :production: 
   :oraclecrm_service_url: https://secure-ausomxkwa.crmondemand.com/Services/Integration
 :development: 

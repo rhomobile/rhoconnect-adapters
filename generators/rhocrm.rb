@@ -113,7 +113,7 @@ module Rhocrm
       template.destination = "#{name}/application.rb"
     end
     template :spec_helper do |template|
-      template.source = 'spec/spec_helper.rb'
+      template.source = File.join('..','spec','spec_helper.rb')
       template.destination = "#{name}/spec/spec_helper.rb"
     end
     template :vendor_application do |template|
