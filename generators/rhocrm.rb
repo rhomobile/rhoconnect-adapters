@@ -19,7 +19,7 @@ module Rhocrm
       standard_sources.index(name) != nil
     end
   end
-  @registered_backends = ['OracleOnDemand','MSDynamics'];
+  @registered_backends = ['OracleOnDemand','MsDynamics'];
   @standard_sources = ['Account','Contact','Opportunity','Lead'];
   
   desc <<-DESC

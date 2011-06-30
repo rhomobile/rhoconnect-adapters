@@ -1,0 +1,8 @@
+:test: 
+  :test_user: sample_user
+  :test_password: sample_password
+:production: 
+  
+:development: 
+
+

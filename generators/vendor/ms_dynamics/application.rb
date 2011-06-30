@@ -11,9 +11,9 @@ module Rhocrm
             # From time to time Win Live doesn't respond or returns 400 (Bad Request); 
             # we probably should retry in such cases  
             wlid_ticket, wlid_expires = 
-              MSDynamics::WlidService.get_ticket(username,password)
+              Rhocrm::MsDynamics::WlidService.get_ticket(username,password)
             crm_service_url, crm_ticket, crm_ticket_expires, user_organization = 
-              MSDynamics::DiscoveryService.get_crm_ticket("rhomobileinc.crm.dynamics.com",wlid_ticket)
+              Rhocrm::MsDynamics::DiscoveryService.get_crm_ticket("rhomobileinc.crm.dynamics.com",wlid_ticket)
             # store recieved tickets and associated information in redis for the future reference  
             Store.set_data("#{username}-msdynamics-auth-info","#{username}" => {
               "wlid_ticket" => wlid_ticket,
@@ -28,6 +28,22 @@ module Rhocrm
             return false
           end
           true
+        end
+        def get_settings
+          return @settings if @settings
+          begin
+            file = YAML.load_file(File.join(ROOT_PATH,'settings','settings.yml'))
+            env = (ENV['RHO_ENV'] || :development).to_sym
+            @settings = file[env]
+            
+            # vendor-specific settings
+            file = YAML.load_file(File.join(ROOT_PATH,'vendor','ms_dynamics','settings','settings.yml'))
+            @settings.merge!(file[env])
+          rescue Exception => e
+            puts "Error opening settings file: #{e}"
+            puts e.backtrace.join("\n")
+            raise e
+          end
         end
       end
     end
