@@ -1,5 +1,5 @@
 require 'rhocrm'
-require 'rhocrm/ms_dynamics'
+require 'vendor/ms_dynamics/ms_dynamics'
 
 module Rhocrm
   module MsDynamics
