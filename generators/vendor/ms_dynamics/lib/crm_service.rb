@@ -34,7 +34,7 @@ module Rhocrm
         doc = SoapService.send_request(@crm_service_url,message,get_action('Retrieve'))
         res = {}
         attributes.each do |attribute|
-          res.merge!(attribute => MSDynamics::SoapService.select_node_text(doc,"cws7:#{attribute}"))
+          res.merge!(attribute => MSDynamics::SoapService.select_node_text(doc,"//cws7:#{attribute}"))
         end
         res
       end
@@ -54,7 +54,7 @@ module Rhocrm
             </query>
           </RetrieveMultiple>")      
         doc = SoapService.send_request(@crm_service_url,message,get_action('RetrieveMultiple'))
-        business_entities = SoapService.select_node(doc,'cws6:BusinessEntity')
+        business_entities = SoapService.select_node(doc,'//cws6:BusinessEntity')
         business_entities.collect do |business_entity|
           attributes = {}
           business_entity.children.each do |attrib|
@@ -73,7 +73,7 @@ module Rhocrm
             </entity> 
           </Create>")
         doc = SoapService.send_request(@crm_service_url,message,get_action('Create'))
-        SoapService.select_node_text(doc,'cws7:CreateResult')        
+        SoapService.select_node_text(doc,'//cws7:CreateResult')        
       end
     
       def update(entity_name,entity_id,params)
@@ -98,7 +98,7 @@ module Rhocrm
     
       def get_current_user
         doc = request('WhoAmIRequest')
-        SoapService.select_node_text(doc,'cws7:UserId')
+        SoapService.select_node_text(doc,'//cws7:UserId')
       end
         
       private

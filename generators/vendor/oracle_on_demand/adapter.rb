@@ -3,10 +3,21 @@ require 'rhocrm/soap_service'
 
 module Rhocrm
   module OracleOnDemand
-    Rhocrm.node_namespaces.merge!({'plns' => 'urn:crmondemand/ws/picklist/',
-                                   'pldoc' => 'urn:/crmondemand/xml/picklist'});
-    class Adapter < SourceAdapter 
+    Rhocrm::SoapService.node_namespaces.merge!({'s'   => 'http://schemas.xmlsoap.org/soap/envelope/',
+                                                'plns' => 'urn:crmondemand/ws/picklist/',
+                                                'pldoc' => 'urn:/crmondemand/xml/picklist'});
+    Rhocrm::SoapService.envelope_namespaces += <<-DESC
+      xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\"
+    DESC
+    
+    class Adapter < SourceAdapter
+      @picklist_namespaces = Rhocrm::SoapService.envelope_namespaces + "\nxmlns:wsdl=\"urn:crmondemand/ws/picklist/\""
+      attr_accessor :crm_object
+      attr_accessor :crm_object_namespaces
+      
       class << self
+        attr_accessor :picklist_namespaces
+        
         def get_columns(fields)
           columns = ""
           fields.each do |key,val|
@@ -34,7 +45,11 @@ module Rhocrm
       
       def configure_fields
         # this is going to be used in XPath searches
-        Rhocrm.node_namespaces.merge!({"#{@crm_object}doc" => "urn:/crmondemand/xml/#{@crm_object}/Data"});
+        Rhocrm::SoapService.node_namespaces.merge!({"#{crm_object}doc" => "urn:/crmondemand/xml/#{crm_object}/Data"});
+        
+        # this is going to be passed in SOAP requests
+        @crm_object_namespaces = Rhocrm::SoapService.envelope_namespaces
+        @crm_object_namespaces += "\nxmlns:wsdl=\"urn:crmondemand/ws/ecbs/#{crm_object.downcase}/\""
         
         # initialize fields map
         @fields = get_object_settings['Query_Fields']
@@ -56,7 +71,7 @@ module Rhocrm
       def get_object_settings
         return @object_settings if @object_settings
         begin
-          @object_settings = Rhocrm::Field.load_file(File.join(ROOT_PATH,'vendor','oracle_on_demand','settings',"#{@crm_object}.yml"))
+          @object_settings = Rhocrm::Field.load_file(File.join(ROOT_PATH,'vendor','oracle_on_demand','settings',"#{crm_object}.yml"))
         rescue Exception => e
           puts "Error opening CRMObjects settings file: #{e}"
           puts e.backtrace.join("\n")
@@ -86,32 +101,32 @@ module Rhocrm
       end
  
       def get_picklist(element_name)
-        puts "GET PICKLIST for object: #{@crm_object}, element: #{element_name}"
+        puts "GET PICKLIST for object: #{crm_object}, element: #{element_name}"
     
         # check if we already have it in Store
-        picklist = Store.get_data("#{@crm_object}:#{element_name}_picklist",Array)
+        picklist = Store.get_data("#{crm_object}:#{element_name}_picklist",Array)
         return picklist if picklist.size != 0
         
         password = Store.get_value("#{current_user.login}:password")
-        wsse = SoapService.create_wsse_header(current_user.login, password)
+        wsse = Rhocrm::SoapService.compose_wsse_header(current_user.login, password)
         body = "<wsdl:PicklistWS_GetPicklistValues_Input>
-                   <wsdl:RecordType>#{@crm_object}</wsdl:RecordType>
+                   <wsdl:RecordType>#{crm_object}</wsdl:RecordType>
                    <wsdl:FieldName>#{element_name}</wsdl:FieldName>
                  </wsdl:PicklistWS_GetPicklistValues_Input>"
-        req = SoapService.compose_message(wsse, body, "xmlns:wsdl=\"urn:crmondemand/ws/picklist/\"")
+        req = Rhocrm::SoapService.compose_message(wsse, body, Adapter.picklist_namespaces)
         
         field_values = []
         response = nil
         begin
-          response = SoapService.send_request("#{@endpoint_url}/GetPicklistValues",
+          response = Rhocrm::SoapService.send_request_raw("#{@endpoint_url}/GetPicklistValues",
                                               req, 
                                               "\"document/urn:crmondemand/ws/picklist/:GetPicklistValues\"",
                                               @session_cookie);
           
-          oracle_rec = SoapService.select_node(Nokogiri::XML(response), '//pldoc:PicklistValue')
+          oracle_rec = Rhocrm::SoapService.select_node(Nokogiri::XML(response), '//pldoc:PicklistValue')
           oracle_rec.each do |pval|
-            disabled = SoapService.select_node_text(pval, 'pldoc:Disabled')
-            field_values << SoapService.select_node_text(pval, 'pldoc:DisplayValue') if not disabled == 'Y'
+            disabled = Rhocrm::SoapService.select_node_text(pval, 'pldoc:Disabled')
+            field_values << Rhocrm::SoapService.select_node_text(pval, 'pldoc:DisplayValue') if not disabled == 'Y'
           end
     
         rescue RestClient::Exception => e
@@ -120,7 +135,7 @@ module Rhocrm
         # server stateless session id is returned with the response
         @session_cookie = response.cookies
     
-        Store.put_data("#{@crm_object}:#{element_name}_picklist", field_values)
+        Store.put_data("#{crm_object}:#{element_name}_picklist", field_values)
     
         field_values
       end
@@ -134,20 +149,20 @@ module Rhocrm
       end
 
       def execute_soap_action(action, soap_body)
-        action_prefix = "#{@crm_object}" + action
-        soapaction = "\"document/urn:crmondemand/ws/ecbs/#{@crm_object.downcase}/:"
+        action_prefix = "#{crm_object}" + action
+        soapaction = "\"document/urn:crmondemand/ws/ecbs/#{crm_object.downcase}/:"
         soapaction += action_prefix + '"'
         
         password = Store.get_value("#{current_user.login}:password")
-        wsse = SoapService.create_wsse_header(current_user.login, password)
-        body = "<wsdl:#{@crm_object}#{action}_Input>
+        wsse = Rhocrm::SoapService.compose_wsse_header(current_user.login, password)
+        body = "<wsdl:#{crm_object}#{action}_Input>
                 #{soap_body}
-              </wsdl:#{@crm_object}#{action}_Input>"
-        req = SoapService.compose_message(wsse, body, "xmlns:wsdl=\"urn:crmondemand/ws/ecbs/#{@crm_object.downcase}/\"")
+              </wsdl:#{crm_object}#{action}_Input>"
+        req = Rhocrm::SoapService.compose_message(wsse, body, crm_object_namespaces)
         
         response = nil
         begin
-          response = SoapService.send_request("#{@endpoint_url}/#{@crm_object}",
+          response = Rhocrm::SoapService.send_request_raw("#{@endpoint_url}/#{crm_object}",
                                               req, 
                                               soapaction,
                                               @session_cookie);
@@ -157,7 +172,7 @@ module Rhocrm
         # server stateless session id is returned with the response
         @session_cookie = response.cookies
         
-        SoapService.select_node(Nokogiri::XML(response), "//#{@crm_object}doc:ListOf#{@crm_object}")[0]
+        Rhocrm::SoapService.select_node(Nokogiri::XML(response), "//#{crm_object}doc:ListOf#{crm_object}")[0]
       end  
 
       def query(params=nil)
@@ -172,23 +187,23 @@ module Rhocrm
         start_row = 0
         begin 
           
-          soap_body = "<wsdl:ListOf#{@crm_object} recordcountneeded=\"true\" pagesize=\"100\" startrownum=\"#{start_row.to_s}\">
-            <wsdl:#{@crm_object} searchspec=\"\">
+          soap_body = "<wsdl:ListOf#{crm_object} recordcountneeded=\"true\" pagesize=\"100\" startrownum=\"#{start_row.to_s}\">
+            <wsdl:#{crm_object} searchspec=\"\">
               #{Adapter.get_columns(@fields)}
-            </wsdl:#{@crm_object}>
-          </wsdl:ListOf#{@crm_object}>"
+            </wsdl:#{crm_object}>
+          </wsdl:ListOf#{crm_object}>"
 
           query_results = execute_soap_action('QueryPage', soap_body)
           fetch_more = query_results['lastpage'] == 'true' ? false : true;
           
           query_results.children.each do |record|
-            if record.name == "#{@crm_object}"
-               id_field = SoapService.select_node_text(record, "#{@crm_object}doc:Id")
+            if record.name == "#{crm_object}"
+               id_field = Rhocrm::SoapService.select_node_text(record, "#{crm_object}doc:Id")
                converted_record = {}
                # grab only the allowed fields 
                # and map oracle field names into RhoSync field names
                @fields.each do |element_name,element_def|
-                 converted_record[element_name] = SoapService.select_node_text(record, "#{@crm_object}doc:#{element_name}")
+                 converted_record[element_name] = Rhocrm::SoapService.select_node_text(record, "#{crm_object}doc:#{element_name}")
                end
                @result[id_field] = converted_record
              end
@@ -210,7 +225,7 @@ module Rhocrm
         show_fields = []
         new_fields = []
         edit_fields = []
-        model_name = "" + @crm_object
+        model_name = "" + crm_object
         model_name[0] = model_name[0,1].downcase
         record_sym = '@' + "#{model_name}"
         @fields.each do |element_name,element_def|
@@ -250,10 +265,10 @@ module Rhocrm
         # Show
         show_list = { :name => 'list', :type => 'list', :children => show_fields }
         show_form = { 
-          :name => "#{@crm_object}_show",
+          :name => "#{crm_object}_show",
           :type => 'show_form',
-          :title => "#{@crm_object} details",
-          :object => "#{@crm_object}",
+          :title => "#{crm_object} details",
+          :object => "#{crm_object}",
           :model => "#{model_name}",
           :id => "{{#{record_sym}/Id}}",
           :children => [show_list]
@@ -264,8 +279,8 @@ module Rhocrm
         new_list[:children] = new_fields
         new_form = {
           :type => 'new_form',
-          :title => "New #{@crm_object}",
-          :object => "#{@crm_object}",
+          :title => "New #{crm_object}",
+          :object => "#{crm_object}",
           :model => "#{model_name}",
           :children => [new_list]
         }
@@ -275,8 +290,8 @@ module Rhocrm
         edit_list[:children] = edit_fields
         edit_form = { 
           :type => 'update_form',
-          :title => "New #{@crm_object}",
-          :object => "#{@crm_object}",
+          :title => "New #{crm_object}",
+          :object => "#{crm_object}",
           :model => "#{model_name}",
           :id => "{{#{record_sym}/Id}}",
           :children => [edit_list]
@@ -299,15 +314,15 @@ module Rhocrm
           end
         end
         
-        soap_body = "<wsdl:ListOf#{@crm_object}>
-            <wsdl:#{@crm_object}>
+        soap_body = "<wsdl:ListOf#{crm_object}>
+            <wsdl:#{crm_object}>
               #{Adapter.get_columns_values(request_fields)}
-            </wsdl:#{@crm_object}>
-          </wsdl:ListOf#{@crm_object}>"
+            </wsdl:#{crm_object}>
+          </wsdl:ListOf#{crm_object}>"
 
         begin 
           oracle_rec = execute_soap_action('Insert', soap_body)
-          created_object_id = SoapService.select_node_text(oracle_rec, "//#{@crm_object}doc:Id").to_s
+          created_object_id = Rhocrm::SoapService.select_node_text(oracle_rec, "//#{crm_object}doc:Id").to_s
         rescue RestClient::Error => e
           raise e
         end
@@ -331,15 +346,15 @@ module Rhocrm
           request_fields['Id'] = update_hash['id']
         end
         
-        soap_body = "<wsdl:ListOf#{@crm_object}>
-            <wsdl:#{@crm_object}>
+        soap_body = "<wsdl:ListOf#{crm_object}>
+            <wsdl:#{crm_object}>
               #{Adapter.get_columns_values(request_fields)}
-            </wsdl:#{@crm_object}>
-          </wsdl:ListOf#{@crm_object}>"
+            </wsdl:#{crm_object}>
+          </wsdl:ListOf#{crm_object}>"
 
         begin 
           oracle_rec = execute_soap_action('Update', soap_body)
-          updated_object_id = SoapService.select_node_text(oracle_rec, "#{@crm_object}doc:Id")
+          updated_object_id = Rhocrm::SoapService.select_node_text(oracle_rec, "#{crm_object}doc:Id")
         rescue RestClient::Error => e
           raise e
         end
@@ -356,11 +371,11 @@ module Rhocrm
             request_fields[element_name] = field_value
           end
         end
-        soap_body = "<wsdl:ListOf#{@crm_object}>
-            <wsdl:#{@crm_object}>
+        soap_body = "<wsdl:ListOf#{crm_object}>
+            <wsdl:#{crm_object}>
               #{Adapter.get_columns_values(request_fields)}
-            </wsdl:#{@crm_object}>
-          </wsdl:ListOf#{@crm_object}>"
+            </wsdl:#{crm_object}>
+          </wsdl:ListOf#{crm_object}>"
 
         begin 
           execute_soap_action('Delete', soap_body)

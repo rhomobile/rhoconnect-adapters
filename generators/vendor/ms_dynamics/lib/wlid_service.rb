@@ -49,7 +49,7 @@ module Rhocrm
             </DeviceAddRequest>"
           windows_live_device_url = "https://login.live.com/ppsecure/DeviceAddCredential.srf"
           doc = send_request(windows_live_device_url,device_registration_request,nil,"application/soap+xml; charset=UTF-8")
-          raise "Can't register machine with Wndows Live ID" if select_node(doc,'DeviceAddResponse/@Success').to_s.strip != 'true'
+          raise "Can't register machine with Wndows Live ID" if select_node(doc,'//DeviceAddResponse/@Success').to_s.strip != 'true'
         end
 
         # Validate Windows Live ID response for any exception.
@@ -57,12 +57,12 @@ module Rhocrm
         # source - An exception source.
         # Raise runtime error is request is invalid 
         def _is_response_valid(doc,source)
-          if select_node(doc,'s:Fault').size > 0
+          if select_node(doc,'//s:Fault').size > 0
             error = "Unknown error"
             begin
-              reason = select_node_text(doc,'s:Reason/s:Text')
-              details = select_node_text(doc,'psf:text')
-              code = select_node_text(doc,'psf:code')
+              reason = select_node_text(doc,'//s:Reason/s:Text')
+              details = select_node_text(doc,'//psf:text')
+              code = select_node_text(doc,'//psf:code')
             error = "#{reason} (#{code}): #{details}" 
             rescue; end
             begin
@@ -125,7 +125,7 @@ module Rhocrm
             # validate response and raise if invalid
             _is_response_valid(doc,"IssueDeviceToken")
             # get device token
-            select_node(doc,'wst:RequestedSecurityToken/*')
+            select_node(doc,'//wst:RequestedSecurityToken/*')
         end
 
         # Gets a Windows Live ID RequestSecurityTokenResponse ticket for a specified user.  
@@ -147,8 +147,8 @@ module Rhocrm
             # validate response and raise if invalid
             _is_response_valid(doc,"IssueTicket")
             # get ticket
-            expires = DateTime.parse(select_node_text(doc,'wst:Lifetime/wsu:Expires'))
-            ticket = select_node_text(doc,'wsse:BinarySecurityToken')
+            expires = DateTime.parse(select_node_text(doc,'//wst:Lifetime/wsu:Expires'))
+            ticket = select_node_text(doc,'//wsse:BinarySecurityToken')
             [CGI::escape(ticket),expires]
         end
       end

@@ -4,6 +4,11 @@ Rhocrm::AppGenerator.add_vendor_templates :directory, :msdynamics_lib_files do |
   dir.destination = File.join("#{name}", 'vendor','ms_dynamics','lib')
 end
 
+Rhocrm::AppGenerator.add_vendor_templates :file, :ms_dynamics_main_require do |file,name,crm|
+  file.source = File.join('..','..','vendor','ms_dynamics','ms_dynamics.rb')
+  file.destination = File.join("#{name}", 'vendor','ms_dynamics','ms_dynamics.rb')
+end
+
 Rhocrm::AppGenerator.add_vendor_templates :file, :settings_yml do |file,name,crm|
   file.source = File.join('..','..','vendor','ms_dynamics','settings','settings.yml')
   file.destination = File.join("#{name}", 'vendor','ms_dynamics','settings','settings.yml')

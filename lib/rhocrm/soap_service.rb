@@ -2,26 +2,34 @@ require 'rest-client'
 require 'nokogiri'
 
 module Rhocrm
-  class << self; attr_accessor :node_namespaces end
-  
-  @node_namespaces = {
-      'wsu' => 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd',
-      'wsse'=> 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd',
-      's'   => 'http://schemas.xmlsoap.org/soap/envelope/'
-  };
-
   class SoapService
+    @node_namespaces = {
+        'wsu' => 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd',
+        'wsse'=> 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd',
+    };
+    @envelope_namespaces = <<-DESC
+       xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" 
+       xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" 
+       xmlns:wsse=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\"
+       xmlns:wsu=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\"
+    DESC
 
-    class << self      
+    class << self
+      # use node_namespaces attribute to specify namespaces used 
+      # by SoapService's select_node and select_node_text methods 
+      attr_accessor :node_namespaces
+      # use envelope namespaces to be passed with the SOAP request
+      attr_accessor :envelope_namespaces
+         
       def select_node(doc,node_name)
-        doc.xpath("#{node_name}",Rhocrm.node_namespaces)
+        doc.xpath("#{node_name}",SoapService.node_namespaces)
       end
 
       def select_node_text(doc,node_name)
-        doc.xpath("#{node_name}/text()",Rhocrm.node_namespaces).to_s.strip
+        doc.xpath("#{node_name}/text()",SoapService.node_namespaces).to_s.strip
       end
 
-      def create_wsse_header(username,password)
+      def compose_wsse_header(username,password)
         "<wsse:Security>
           <wsse:UsernameToken wsu:Id=\"UsernameToken-1\">
             <wsse:Username>#{username}</wsse:Username>
@@ -30,24 +38,22 @@ module Rhocrm
         </wsse:Security>"
       end
 
-      def compose_message(header,body,namespaces = nil)
+      def compose_message(header,body,namespaces=Rhocrm::SoapService.envelope_namespaces)
         hdr = header ? "<s:Header>#{header}</s:Header>" : ""
         bdy = body ? "<s:Body>#{body}</s:Body>" : ""
-        namesp = namespaces ? namespaces : ''
         "<?xml version=\"1.0\"?>
-         <s:Envelope
-           #{namesp}
-           xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" 
-           xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" 
-           xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\"
-           xmlns:wsse=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\"
-           xmlns:wsu=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\">
+         <s:Envelope #{namespaces}>
            #{hdr}
            #{bdy}
          </s:Envelope>"        
       end
       
       def send_request(endpoint,message,action=nil,content_type='text/xml; charset=UTF-8',cookie=nil)
+        response = send_request_raw(endpoint, message, action, content_type, cookie)
+        Nokogiri::XML(response)
+      end
+      
+      def send_request_raw(endpoint,message,action=nil,content_type='text/xml; charset=UTF-8',cookie=nil)
         begin
           headers = { :content_type => content_type }
           headers.merge!({ "SOAPAction" => action }) if action

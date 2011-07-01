@@ -1,8 +1,11 @@
 :test: 
   :test_user: sample_user
   :test_password: sample_password
+  :ticket_hostname: rhomobileinc.crm.dynamics.com
 :production: 
-  
-:development: 
+  :ticket_hostname: rhomobileinc.crm.dynamics.com
+:development:
+  :ticket_hostname: rhomobileinc.crm.dynamics.com
+
 
 

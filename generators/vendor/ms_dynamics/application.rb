@@ -13,7 +13,7 @@ module Rhocrm
             wlid_ticket, wlid_expires = 
               Rhocrm::MsDynamics::WlidService.get_ticket(username,password)
             crm_service_url, crm_ticket, crm_ticket_expires, user_organization = 
-              Rhocrm::MsDynamics::DiscoveryService.get_crm_ticket("rhomobileinc.crm.dynamics.com",wlid_ticket)
+              Rhocrm::MsDynamics::DiscoveryService.get_crm_ticket(get_settings[:ticket_hostname],wlid_ticket)
             # store recieved tickets and associated information in redis for the future reference  
             Store.set_data("#{username}-msdynamics-auth-info","#{username}" => {
               "wlid_ticket" => wlid_ticket,
@@ -49,5 +49,3 @@ module Rhocrm
     end
   end
 end
-
-Application.initializer(ROOT_PATH)
