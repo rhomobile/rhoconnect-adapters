@@ -8,6 +8,9 @@ module Rhocrm
   extend Templater::Manifold
   extend Rhocrm
   
+  class NotSupportedBackendError < Templater::MalformattedArgumentError
+  end
+  
   class << self 
     attr_reader :registered_backends
     attr_reader :standard_sources
@@ -48,7 +51,7 @@ module Rhocrm
     end
     
     def configure_gemfile
-      gem_file = File.join("#{name}",'Gemfile')
+      gem_file = File.join(@destination_root,"#{name}",'Gemfile')
       doc = "\ngem 'rhocrm', '#{gem_version}'\n"
       File.open(gem_file, 'a') {|f| f.write(doc) }
     end
@@ -62,7 +65,7 @@ module Rhocrm
           puts "    - #{crm}"
         end
         puts ''
-        exit
+        raise NotSupportedBackendError
       end
     end
     
@@ -76,7 +79,7 @@ module Rhocrm
     end
     
     def self.add_vendor_templates(verb, tname, &block)
-      send verb, tname do |t|
+      send verb, "#{tname}_vendor_custom".to_sym do |t|
         yield t,name,crm
       end
     end

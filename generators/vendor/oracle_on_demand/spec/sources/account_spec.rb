@@ -4,7 +4,7 @@ describe "Account" do
   it_should_behave_like "SpecHelper" do
   
     before(:each) do
-      sample_data_file = File.join('vendor','oracle_on_demand','spec_data','Account.yml')
+      sample_data_file = File.join(File.dirname(__FILE__),'..','..','vendor','oracle_on_demand','spec_data','Account.yml')
       @sample_data = YAML.load_file(sample_data_file)['Account'] if sample_data_file and File.exist?(sample_data_file)
       setup_test_for Account,@test_user
       Application.authenticate(@test_user, @test_password,"")

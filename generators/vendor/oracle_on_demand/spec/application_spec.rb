@@ -1,6 +1,7 @@
 require File.join(File.dirname(__FILE__),'spec_helper')
-
+puts " loading the app spec "
 describe "Application" do
+  puts " we are here in point 3 "
   it_should_behave_like "SpecHelper" do
     it "should authenticate" do 
       Application.authenticate(@test_user,@test_password,nil).should be_true

@@ -31,5 +31,5 @@ class String
   end
 end
 
-
 Rhocrm.run_cli(Dir.pwd, 'rhocrm', Rhocrm::VERSION, ARGV)
+
