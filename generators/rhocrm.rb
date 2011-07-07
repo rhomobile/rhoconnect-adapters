@@ -4,26 +4,14 @@ require 'rhosync'
 require File.join('rhosync', '..','..','generators','rhosync')
 require 'templater'
 
+require 'rhocrm'
+
 module Rhocrm
   extend Templater::Manifold
   extend Rhocrm
   
   class NotSupportedBackendError < Templater::MalformattedArgumentError
   end
-  
-  class << self 
-    attr_reader :registered_backends
-    attr_reader :standard_sources
-    
-    def valid_backend?(name)
-      registered_backends.index(name) != nil
-    end
-    def standard_source?(name)
-      standard_sources.index(name) != nil
-    end
-  end
-  @registered_backends = ['OracleOnDemand','MsDynamics'];
-  @standard_sources = ['Account','Contact','Opportunity','Lead'];
   
   desc <<-DESC
     Rhocrm generator

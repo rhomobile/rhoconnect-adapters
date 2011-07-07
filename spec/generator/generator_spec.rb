@@ -5,12 +5,13 @@ require File.join(File.dirname(__FILE__),'..','..','generators','rhocrm')
 describe "Generator" do
   appname = 'mynewapp'
   source = 'CustomObj'
-  #@backend = ''
-  
-  path = File.expand_path(File.join(File.dirname(__FILE__)))
   
   before(:each) do
     FileUtils.mkdir_p '/tmp'
+  end
+  
+  after(:all) do
+    FileUtils.rm_rf("/tmp/#{appname}")
   end
   
   describe "AppGenerator Command-line" do

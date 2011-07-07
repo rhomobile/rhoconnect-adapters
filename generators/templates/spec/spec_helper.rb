@@ -3,7 +3,9 @@ require 'rubygems'
 # Set environment to test
 ENV['RHO_ENV'] = 'test'
 ROOT_PATH = File.expand_path(File.join(File.dirname(__FILE__),'..'))
-#Bundler.require(:default, ENV['RHO_ENV'].to_sym)
+
+require 'bundler'
+Bundler.require(:default, ENV['RHO_ENV'].to_sym)
 
 # Try to load vendor-ed rhosync, otherwise load the gem
 begin
@@ -32,13 +34,25 @@ module RSpec
   end
 end
 
+module TestHelpers
+  class << self
+    @created_records = {}
+    attr_accessor :created_records
+  end
+end
+
 shared_examples_for "SpecHelper" do
   include Rhosync::TestMethods
   
+  def load_credentials(backend)
+    file = YAML.load_file(File.join(ROOT_PATH,'..','rhocrm_test',"#{Rhosync.under_score(backend)}.yml"))
+    return file.nil? ? {} : file
+  end
+  
   before(:all) do
-    settings = Application.get_settings
-    @test_user = "#{settings[:test_user]}"
-    @test_password = "#{settings[:test_password]}"
+    credentials = load_credentials(Application.backend)
+    @test_user = "#{credentials[:test_user]}"
+    @test_password = "#{credentials[:test_password]}"
     puts "Specify test user before running these specs" unless @test_user.length > 0
     puts "Specify test user password before running these specs" unless @test_password.length > 0
   end

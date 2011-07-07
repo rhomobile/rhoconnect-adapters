@@ -1,6 +1,20 @@
 require "rhocrm/version"
 
 module Rhocrm
+  class << self 
+    attr_reader :registered_backends
+    attr_reader :standard_sources
+
+    def valid_backend?(name)
+      registered_backends.index(name) != nil
+    end
+    def standard_source?(name)
+      standard_sources.index(name) != nil
+    end
+  end
+  @registered_backends = ['MsDynamics','OracleOnDemand'];
+  @standard_sources = ['Account','Contact','Opportunity','Lead'];
+  
   class Field
     class << self
       def create(name,type,label=nil)

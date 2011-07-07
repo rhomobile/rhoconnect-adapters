@@ -2,6 +2,10 @@ require 'vendor/<%=underscore_crm%>/application'
 
 class Application < Rhocrm::<%=crm_name%>::Application
   class << self
+    def backend
+      '<%=underscore_crm%>'
+    end
+    
     def authenticate(username,password,session)
       super(username, password, session) 
       # override the default behaviour here

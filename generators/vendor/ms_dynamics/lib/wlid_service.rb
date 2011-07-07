@@ -63,7 +63,7 @@ module Rhocrm
               reason = select_node_text(doc,'//s:Reason/s:Text')
               details = select_node_text(doc,'//psf:text')
               code = select_node_text(doc,'//psf:code')
-            error = "#{reason} (#{code}): #{details}" 
+              error = "#{reason} (#{code}): #{details}" 
             rescue; end
             begin
               raise "#{self.name} error w/ #{source}: #{error}"

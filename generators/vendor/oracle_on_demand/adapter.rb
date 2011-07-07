@@ -166,7 +166,7 @@ module Rhocrm
                                               req, 
                                               soapaction,
                                               @session_cookie);
-        rescue RestClient::Error => e
+        rescue RestClient::Exception => e
           raise e
         end
         # server stateless session id is returned with the response
@@ -323,7 +323,7 @@ module Rhocrm
         begin 
           oracle_rec = execute_soap_action('Insert', soap_body)
           created_object_id = Rhocrm::SoapService.select_node_text(oracle_rec, "//#{crm_object}doc:Id").to_s
-        rescue RestClient::Error => e
+        rescue RestClient::Exception => e
           raise e
         end
         
@@ -346,6 +346,10 @@ module Rhocrm
           request_fields['Id'] = update_hash['id']
         end
         
+        if request_fields['Id'] == nil
+          raise SourceAdapterObjectConflictError "'Id' field must be specified for the Update request"
+        end
+        
         soap_body = "<wsdl:ListOf#{crm_object}>
             <wsdl:#{crm_object}>
               #{Adapter.get_columns_values(request_fields)}
@@ -355,7 +359,7 @@ module Rhocrm
         begin 
           oracle_rec = execute_soap_action('Update', soap_body)
           updated_object_id = Rhocrm::SoapService.select_node_text(oracle_rec, "#{crm_object}doc:Id")
-        rescue RestClient::Error => e
+        rescue RestClient::Exception => e
           raise e
         end
         updated_object_id
@@ -371,6 +375,11 @@ module Rhocrm
             request_fields[element_name] = field_value
           end
         end
+        
+        if request_fields['Id'] == nil
+          raise SourceAdapterObjectConflictError "'Id' field must be specified for the Delete request"
+        end
+        
         soap_body = "<wsdl:ListOf#{crm_object}>
             <wsdl:#{crm_object}>
               #{Adapter.get_columns_values(request_fields)}
@@ -380,7 +389,7 @@ module Rhocrm
         begin 
           execute_soap_action('Delete', soap_body)
           deleted_object_id = delete_hash['Id']
-        rescue RestClient::Error => e
+        rescue RestClient::Exception => e
           raise e
         end
         

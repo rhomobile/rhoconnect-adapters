@@ -17,7 +17,7 @@ describe "Application" do
     end
     
     it "should not authenticate with wrong credentials" do
-      Application.should_receive(:warn).once.with('Can\'t authenticate user wrong_user: #<RuntimeError: Rhocrm::MsDynamics::WlidService error w/ IssueTicket: Authentication Failure (0x80041034): The specified member name is either invalid or empty.&#xD;>')
+      Application.should_receive(:warn).once.with('Can\'t authenticate user wrong_user: #<RuntimeError: Rhocrm::MsDynamics::WlidService error w/ IssueTicket: Authentication Failure (0x80041034): The specified member name is either invalid or empty.&#13;>')
       Application.authenticate('wrong_user','wrong_password',nil).should be_false
     end
   end

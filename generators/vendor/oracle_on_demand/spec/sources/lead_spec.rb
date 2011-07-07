@@ -29,21 +29,21 @@ describe "Lead" do
       result = test_create(create_hash)
       puts result.inspect
       create_hash['Id'] = result
-      @@created_records = { result => create_hash }
+      TestHelpers.created_records = { result => create_hash }
       create_errors.should == {}
     end
   
     it "should process Lead update" do
-      @@created_records.each do |key,value|
+      TestHelpers.created_records.each do |key,value|
         value["LeadFirstName"] = "Changed Lead #{key.to_s}"
       end
-      result = test_update(@@created_records)
+      result = test_update(TestHelpers.created_records)
       puts result.inspect
       update_errors.should == {}
     end
   
     it "should process Lead delete" do
-      result = test_delete(@@created_records)
+      result = test_delete(TestHelpers.created_records)
       puts result.inspect
       delete_errors.should == {}
     end
