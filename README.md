@@ -27,11 +27,11 @@ To create a standard out-of-the box application use the following command:
 Here, \<CRM\-backend\> parameter specifies the CRM backend that your application will use.
 Currently, the following CRM backends are supported:
 
-   - OracleOnDemand (for [Oracle CRM On Demand](crmondemand.oracle.com))
+   - OracleOnDemand (for [Oracle CRM On Demand](http://crmondemand.oracle.com))
    - MsDynamics (for [Microsoft Dynamics CRM](http://www.microsoft.com/en-us/dynamics/default.aspx))
 
 In the process of generation, the Rhocrm application structure will include typical [RhoSync](http://rhomobile.com/products/rhosync/)
-files (for example, application.rb or settings.yml), plus it will create a special vendor directory 'vendor/<CRM-backend>' 
+files (for example, application.rb or settings.yml), plus it will create a special vendor directory **'vendor/\<CRM\-backend\>'**
 where the generator will place all support files specific for the corresponding CRM backend. Also, every CRM backend
 has a list of settings that are required to prepare and run the application. See below for more detailed instructions.
 
@@ -47,7 +47,7 @@ to the following CRM objects:
 ### Generating CRM Application without pre-built source adapters
 
 In some cases, it is necessary to generate an application without any standard sources.
-For this purpose, the \-\-bare option can be used to generate just the application's skeleton.
+For this purpose, the **\-\-bare** option can be used to generate just the application's skeleton.
 
 	rhocrm app <app_name> <CRM-backend> --bare
 	
