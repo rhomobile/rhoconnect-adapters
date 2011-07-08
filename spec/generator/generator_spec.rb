@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__),'generator_spec_helper')
+require File.join(File.dirname(__FILE__),'..','spec_helper')
 require 'rhocrm'
 require File.join(File.dirname(__FILE__),'..','..','generators','rhocrm')
 

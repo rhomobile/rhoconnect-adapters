@@ -1,6 +1,11 @@
 #$:.unshift File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib'))
 require 'rubygems'
 require 'rspec'
+require 'templater/spec/helpers'
+RSpec.configure do |config|
+  config.include Templater::Spec::Helpers
+end
+
 ENV['RACK_ENV'] = 'test'
 
 # this method removes all vendor-specific actions

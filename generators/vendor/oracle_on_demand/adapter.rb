@@ -14,6 +14,7 @@ module Rhocrm
       @picklist_namespaces = Rhocrm::SoapService.envelope_namespaces + "\nxmlns:wsdl=\"urn:crmondemand/ws/picklist/\""
       attr_accessor :crm_object
       attr_accessor :crm_object_namespaces
+      attr_accessor :fields
       
       class << self
         attr_accessor :picklist_namespaces
@@ -40,7 +41,8 @@ module Rhocrm
                         
       def initialize(source)
         super(source)
-        puts "Initializing ORACLE CRM " + self.class.to_s + " SourceAdapter"      
+        puts "Initializing ORACLE CRM " + self.class.to_s + " SourceAdapter"
+        @fields = {}      
       end
       
       def configure_fields
@@ -82,7 +84,7 @@ module Rhocrm
       def get_picklists
         begin  
           nonquery_fields = get_object_settings['NonQuery_MappingWS_Fields']
-          @fields.each do |element_name, element_def|
+          fields.each do |element_name, element_def|
             # use object field only of it has not been excluded
             # explicitly in the object's settings
             next if nonquery_fields.has_key? element_name
@@ -189,7 +191,7 @@ module Rhocrm
           
           soap_body = "<wsdl:ListOf#{crm_object} recordcountneeded=\"true\" pagesize=\"100\" startrownum=\"#{start_row.to_s}\">
             <wsdl:#{crm_object} searchspec=\"\">
-              #{Adapter.get_columns(@fields)}
+              #{Adapter.get_columns(fields)}
             </wsdl:#{crm_object}>
           </wsdl:ListOf#{crm_object}>"
 
@@ -202,7 +204,7 @@ module Rhocrm
                converted_record = {}
                # grab only the allowed fields 
                # and map oracle field names into RhoSync field names
-               @fields.each do |element_name,element_def|
+               fields.each do |element_name,element_def|
                  converted_record[element_name] = Rhocrm::SoapService.select_node_text(record, "#{crm_object}doc:#{element_name}")
                end
                @result[id_field] = converted_record
@@ -228,7 +230,7 @@ module Rhocrm
         model_name = "" + crm_object
         model_name[0] = model_name[0,1].downcase
         record_sym = '@' + "#{model_name}"
-        @fields.each do |element_name,element_def|
+        fields.each do |element_name,element_def|
           next if element_name == 'Id'
       
           # 1) - read-only show fields
@@ -307,7 +309,7 @@ module Rhocrm
         # (has the image_uri attribute), then a blob will be provided
         created_object_id = nil
         request_fields = {}
-        @fields.each do |element_name, element_def|
+        fields.each do |element_name, element_def|
           field_value = create_hash[element_name]
           if field_value != nil and element_name != 'Id'
             request_fields[element_name] = field_value
@@ -334,7 +336,7 @@ module Rhocrm
       def update(update_hash)
         updated_object_id = nil
         request_fields = {}
-        @fields.each do |element_name,element_def|
+        fields.each do |element_name,element_def|
           field_value = update_hash[element_name]
           if field_value != nil
             request_fields[element_name] = field_value
@@ -369,7 +371,7 @@ module Rhocrm
         deleted_object_id = nil
         request_fields = {}
 
-        @fields.each do |element_name,element_def|
+        fields.each do |element_name,element_def|
           field_value = delete_hash[element_name]
           if field_value != nil
             request_fields[element_name] = field_value

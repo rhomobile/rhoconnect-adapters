@@ -1,12 +1,12 @@
 require File.join(File.dirname(__FILE__),'..','spec_helper')
-require File.join(File.dirname(__FILE__),'..','generator','generator_spec_helper')
-
-require 'rhocrm'
-require File.join(File.dirname(__FILE__),'..','..','generators','rhocrm')
 
 describe "OracleOnDemand App RUNNER" do
   appname = "mynewapp"
   backend = 'OracleOnDemand'
+  
+  after(:all) do
+    FileUtils.rm_rf("/tmp/#{appname}")
+  end
   
   it "should run all the specs for standard #{backend} app " do
     load_templater(backend)

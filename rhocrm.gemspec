@@ -30,4 +30,5 @@ Gem::Specification.new do |s|
   s.add_dependency('rhosync', '>= 3.0.0')
   s.add_dependency('rake', '~> 0.9.2')
   s.add_dependency('nokogiri', '>= 1.4.6')
+  s.add_dependency('templater', '~> 1.0.0')
 end
