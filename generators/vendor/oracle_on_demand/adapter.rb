@@ -134,9 +134,7 @@ module Rhocrm
         end
         # server stateless session id is returned with the response
         @session_cookie = response.cookies
-    
         Store.put_data("#{crm_object}:#{element_name}_picklist", field_values)
-    
         field_values
       end
  
