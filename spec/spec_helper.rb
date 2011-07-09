@@ -2,9 +2,11 @@
 require 'rubygems'
 require 'rspec'
 require 'templater/spec/helpers'
-RSpec.configure do |config|
-  config.include Templater::Spec::Helpers
-end
+
+include Templater::Spec::Helpers
+require 'rhocrm'
+require File.join(File.dirname(__FILE__),'..','generators','rhocrm')
+
 
 ENV['RACK_ENV'] = 'test'
 
@@ -31,17 +33,23 @@ end
 # in order to run the generator
 # it is necessary to remove any previously loaded 
 # vendor-specific actions and load the new ones
-def load_templater(backend)
-  cleanup_templater(Rhocrm::AppGenerator)
-  cleanup_templater(Rhocrm::SourceGenerator)
-  Dir[File.join(File.dirname(__FILE__),'..','generators','vendor',"#{Rhosync.under_score(backend)}",'templates.rb')].each { |vendor_templates| load vendor_templates }
-end
+module Rhocrm
+  class TestHelpers
+    class << self
+      def load_templater(backend)
+        cleanup_templater(Rhocrm::AppGenerator)
+        cleanup_templater(Rhocrm::SourceGenerator)
+        Dir[File.join(File.dirname(__FILE__),'..','generators','vendor',"#{Rhosync.under_score(backend)}",'templates.rb')].each { |vendor_templates| load vendor_templates }
+      end
 
-def generate_sample_app(destination_root,options,appname,backend)
-  FileUtils.rm_rf "#{destination_root}/#{appname}"
+      def generate_sample_app(destination_root,options,appname,backend)
+        FileUtils.rm_rf "#{destination_root}/#{appname}"
 
-  generator = Rhocrm::AppGenerator.new(destination_root,options,appname,backend)
-  generator.invoke!
-  generator.after_run
-  generator
+        generator = Rhocrm::AppGenerator.new(destination_root,options,appname,backend)
+        generator.invoke!
+        generator.after_run
+        generator
+      end
+    end
+  end
 end

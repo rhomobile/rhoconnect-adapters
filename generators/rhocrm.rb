@@ -6,6 +6,8 @@ require 'templater'
 
 require 'rhocrm'
 
+puts " we are here loading rhocrm  generator"
+
 module Rhocrm
   extend Templater::Manifold
   extend Rhocrm
@@ -96,6 +98,9 @@ module Rhocrm
     #third_argument :__bare, :required => false, :desc => "generate CRM application without standard sources", :as => :boolean
     option :bare, :default => false, :desc => "generate CRM application without standard sources", :as => :boolean
     
+    # to prevent re-loading on subsequent loads
+    actions.clear
+    
     # purpose of this call is to invoke all templates in 
     # the Rhosync::Generator except the :application - which is overriden here
     invoke_generator :rhosync_app, [:application, :spec_helper]
@@ -143,6 +148,9 @@ module Rhocrm
 
     first_argument :name, :required => true, :desc => "source name"
     second_argument :crm, :required => true, :desc => "supported CRM backend #{Rhocrm.registered_backends.inspect}"
+    
+    # to prevent re-loading on subsequent loads
+    actions.clear
     
     invoke_generator :rhosync_source, [:source, :source_spec]
     template :source do |template|

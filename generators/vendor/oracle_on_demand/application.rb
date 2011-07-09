@@ -11,7 +11,7 @@ module Rhocrm
             request_url = oraclecrm_url + "?command=" + 'login'
         
             # here we just verifying the credetials
-            # by loggin in and immediately logging out
+            # by logging in and immediately logging out
             in_headers = {
               "UserName" => username,
               "Password" => password

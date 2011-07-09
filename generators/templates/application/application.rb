@@ -6,7 +6,7 @@ class Application < Rhocrm::<%=crm_name%>::Application
       '<%=underscore_crm%>'
     end
     
-    def authenticate(username,password,session)
+    def authenticate(username,password,session=nil)
       super(username, password, session) 
       # override the default behaviour here
     end

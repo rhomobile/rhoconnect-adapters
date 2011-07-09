@@ -1,6 +1,4 @@
 require File.join(File.dirname(__FILE__),'..','spec_helper')
-require 'rhocrm'
-require File.join(File.dirname(__FILE__),'..','..','generators','rhocrm')
 
 describe "Generator" do
   appname = 'mynewapp'
@@ -37,8 +35,8 @@ describe "Generator" do
   Rhocrm.registered_backends.each do |backend|      
     describe "Bare #{backend} App Generator" do
       before(:all) do
-        load_templater(backend)
-        @generator = generate_sample_app('/tmp',{:bare => true},appname,backend)
+        Rhocrm::TestHelpers.load_templater(backend)
+        @generator = Rhocrm::TestHelpers.generate_sample_app('/tmp',{:bare => true},appname,backend)
       end
         
       it "should not generate any sources with --bare option for #{backend}" do
@@ -52,8 +50,8 @@ describe "Generator" do
        
     describe "Default #{backend} App Generator" do 
       before(:all) do
-        load_templater(backend)
-        @generator = generate_sample_app('/tmp',{},appname,backend)
+        Rhocrm::TestHelpers.load_templater(backend)
+        @generator = Rhocrm::TestHelpers.generate_sample_app('/tmp',{},appname,backend)
       end
         
       it "should create new #{backend} standard application files" do
@@ -101,8 +99,8 @@ describe "Generator" do
   Rhocrm.registered_backends.each do |backend|     
     describe "#{backend} Source Generator" do
       before(:each) do
-        load_templater(backend)
-        @app_generator = generate_sample_app('/tmp',{:bare => true},appname,backend)
+        Rhocrm::TestHelpers.load_templater(backend)
+        @app_generator = Rhocrm::TestHelpers.generate_sample_app('/tmp',{:bare => true},appname,backend)
         @generator = Rhocrm::SourceGenerator.new("/tmp/#{appname}",{},source,backend)
       end
         
@@ -113,5 +111,3 @@ describe "Generator" do
     end
   end
 end
-
-#require File.join(File.dirname(__FILE__),'..','apps/app_spec.rb')

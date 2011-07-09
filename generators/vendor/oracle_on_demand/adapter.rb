@@ -41,8 +41,8 @@ module Rhocrm
                         
       def initialize(source)
         super(source)
-        puts "Initializing ORACLE CRM " + self.class.to_s + " SourceAdapter"
-        @fields = {}      
+        @fields = {}   
+        @crm_object = self.class.name   
       end
       
       def configure_fields
@@ -103,8 +103,6 @@ module Rhocrm
       end
  
       def get_picklist(element_name)
-        puts "GET PICKLIST for object: #{crm_object}, element: #{element_name}"
-    
         # check if we already have it in Store
         picklist = Store.get_data("#{crm_object}:#{element_name}_picklist",Array)
         return picklist if picklist.size != 0
@@ -143,7 +141,6 @@ module Rhocrm
       end
  
       def login
-        puts "LOGIN USER: #{current_user.login}" 
         @endpoint_url = Store.get_value("#{current_user.login}:service_url")
     
         # get types information from the GetPicklistValues WS
