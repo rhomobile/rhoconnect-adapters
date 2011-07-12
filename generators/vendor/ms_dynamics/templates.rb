@@ -1,4 +1,4 @@
-# these are Oracle-specific Templater::Generator templates
+# these are MsDynamics-specific Templater::Generator templates
 Rhocrm::AppGenerator.add_vendor_templates :directory, :msdynamics_lib_files do |dir,name,crm|
   dir.source = File.join('..','..','vendor','ms_dynamics','lib')
   dir.destination = File.join("#{name}", 'vendor','ms_dynamics','lib')

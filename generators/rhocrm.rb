@@ -6,8 +6,6 @@ require 'templater'
 
 require 'rhocrm'
 
-puts " we are here loading rhocrm  generator"
-
 module Rhocrm
   extend Templater::Manifold
   extend Rhocrm
