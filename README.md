@@ -11,7 +11,7 @@ CRM applications to extend or customize the default functionality.
 ## Setup
 Install the 'rhocrm' gem by using the following command:
 
-	$ gem install rhocrm
+	$ [sudo] gem install rhocrm
 
 
 ## Usage
