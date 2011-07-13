@@ -1,39 +1,38 @@
-rhocrm
+Rhocrm
 ===
 
-A ruby library containing collection of the out-of-box [RhoSync](http://rhomobile.com/products/rhosync) applications 
+Rhocrm is a ruby library containing a collection of the out-of-box [RhoSync](http://rhomobile.com/products/rhosync) applications 
 for various CRM backends.  
 
-Using rhocrm, you can utilize the pre-built set of the  [RhoSync](http://rhomobile.com/products/rhosync/) applications 
+With Rhocrm, you can utilize the pre-built set of [RhoSync](http://rhomobile.com/products/rhosync/) applications 
 for popular CRM backends (SalesForce, Oracle CRM On Demand, Sugar CRM, etc.). Also, this library includes support for writing your own [RhoSync](http://rhomobile.com/products/rhosync/)
-CRM applications extending or customizing the default functionality.
+CRM applications to extend or customize the default functionality.
 
 ## Setup
 Install the 'rhocrm' gem by using the following command:
 
-	gem install rhocrm
+	$ gem install rhocrm
 
 
 ## Usage
-'rhocrm' command is used to create CRM-based [RhoSync](http://rhomobile.com/products/rhosync/) applications.
-To get familiar with [RhoSync](http://rhomobile.com/products/rhosync/) , please visit the product's [page](http://rhomobile.com/products/rhosync/).
+The 'rhocrm' command creates CRM-based [RhoSync](http://rhomobile.com/products/rhosync/) applications.
+Visit the [RhoSync](http://rhomobile.com/products/rhosync/) website for more information.
 
 ### Generating Standard Application
 
-To create a standard out-of-the box application use the following command:
+To create a standard out-of-the-box Rhocrm application use the following command:
 
-	rhocrm app <app_name> <CRM-backend>
+	$ rhocrm app <app_name> <CRM-backend>
 
-Here, \<CRM\-backend\> parameter specifies the CRM backend that your application will use.
+Here, the \<CRM\-backend\> parameter specifies the CRM backend that your application will use.
 Currently, the following CRM backends are supported:
 
    - OracleOnDemand (for [Oracle CRM On Demand](http://crmondemand.oracle.com))
    - MsDynamics (for [Microsoft Dynamics CRM](http://www.microsoft.com/en-us/dynamics/default.aspx))
 
-In the process of generation, the Rhocrm application structure will include typical [RhoSync](http://rhomobile.com/products/rhosync/)
-files (for example, application.rb or settings.yml), plus it will create a special vendor directory **'vendor/\<CRM\-backend\>'**
-where the generator will place all support files specific for the corresponding CRM backend. Also, every CRM backend
-has a list of settings that are required to prepare and run the application. See below for more detailed instructions.
+The generated Rhocrm application structure will include typical [RhoSync](http://rhomobile.com/products/rhosync/)
+files (for example, application.rb and settings.yml). It will also create a special vendor directory `vendor/\<CRM\-backend\>`
+containing all support files specific for the corresponding CRM backend.
 
 By default, the Rhocrm application will be generated with four standard source adapters corresponding
 to the following CRM objects:
@@ -47,15 +46,15 @@ to the following CRM objects:
 ### Generating CRM Application without pre-built source adapters
 
 In some cases, it is necessary to generate an application without any standard sources.
-For this purpose, the **\-\-bare** option can be used to generate just the application's skeleton.
+For this purpose, use the `\-\-bare` option to generate just the application's skeleton.
 
 	rhocrm app <app_name> <CRM-backend> --bare
 	
 	
 ### Generating CRM source adapters for the Rhocrm application
 
-Once the application is created, it is possible to generate the desired source adapters
-based on the CRM objects by typing the following command in the Rhocrm application directory:
+Once you create your Rhocrm application, you can generate the desired source adapters
+based on the CRM objects by typing the following command in your Rhocrm application directory:
 
 	rhocrm source <CRM-object-name> <CRM-backend>
 	
@@ -65,13 +64,13 @@ build the source adapter for.
 ## Preparing the Rhocrm Application
 
 ### OracleOnDemand settings
-All OracleOnDemand-specific settings are located in the **'vendor/oracle_on_demand/settings'** directory.
-In the file *'settings.yml'* you'll find the entries that are necessary to customize before running the app.
+All OracleOnDemand-specific settings are located in the `vendor/oracle_on_demand/settings` directory.
+In the file `settings.yml` you'll find the entries that you must customize before running the app.
 These are:
 
 - **:oraclecrm_service_url:** <oracle_web_services_integration_url> - substitute the default URL with your OracleOnDemand account URL.
 
-Also, for every source adapter based on CRM object there is a corresponding *'vendor/oracle_on_demand/settings/\<CRM\-object\-name\>.yml'*
+For every source adapter based on CRM object there is a corresponding *'vendor/oracle_on_demand/settings/\<CRM\-object\-name\>.yml'*
 file containing the descriptions for the OracleOnDemand CRM object.
 Every CRM object file has the following entries:
 
@@ -99,8 +98,8 @@ Every CRM object file has the following entries:
          	For example, AccountName field for Contact object 
 			is really a reference to the corresponding Account object.
 
-For the default generated CRM object adapters, this file is pre-filled with information. However, user can customize it by including or excluding
-the desired options. For custom adapters, user will need to fill this file with relevant information. List of object's fields, for example, can be obtained
+For the default generated CRM object adapters, this file is pre-filled with information. However, you can customize it by including or excluding
+options. For custom adapters, you need to fill this file with relevant information. List of object's fields, for example, can be obtained
 from the Oracle CRM On Demand documentation and then later used to fill the Query_Fields setting. Alternatively, user can customize the adapter and obtain 
 the list of fields using the GetMapping API.
  
@@ -112,8 +111,8 @@ These are:
 
 
 ## Running the Rhocrm Application
-Once the application is customized and ready to run, it can be started as any other Rhosync app
-by typing the following command in the CRM application's root directory:
+Once your Rhocrm application is customized and ready to run, you can start it like any other Rhosync app.
+Type the following command in the CRM application's root directory:
 
 	rake rhosync:start
 	
