@@ -46,7 +46,7 @@ to the following CRM objects:
 ### Generating CRM Application without pre-built source adapters
 
 In some cases, it is necessary to generate an application without any standard sources.
-For this purpose, use the `\-\-bare` option to generate just the application's skeleton.
+For this purpose, use the `--bare` option to generate just the application's skeleton.
 
 	rhocrm app <app_name> <CRM-backend> --bare
 	
