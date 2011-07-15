@@ -1,4 +1,16 @@
 # these are MsDynamics-specific Templater::Generator templates
+module Rhocrm
+  module MsDynamics
+    class << self
+      def configure_gemfile
+        # put all specific dependencies here
+        # in the form of hash {'gem' => 'version'}
+        {}
+      end
+    end
+  end
+end
+
 Rhocrm::AppGenerator.add_vendor_templates :directory, :msdynamics_lib_files do |dir,name,crm|
   dir.source = File.join('..','..','vendor','ms_dynamics','lib')
   dir.destination = File.join("#{name}", 'vendor','ms_dynamics','lib')

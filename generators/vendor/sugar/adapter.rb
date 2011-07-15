@@ -1,5 +1,5 @@
 require 'rhocrm'
-require 'sugar'
+require 'vendor/sugar/sugar'
 
 module Rhocrm
   module Sugar

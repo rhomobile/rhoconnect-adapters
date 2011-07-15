@@ -1,4 +1,16 @@
 # these are Oracle-specific Templater::Generator templates
+module Rhocrm
+  module OracleOnDemand
+    class << self
+      def configure_gemfile
+        # put all specific dependencies here
+        # in the form of hash {'gem' => 'version'}
+        {}
+      end
+    end
+  end
+end
+
 Rhocrm::AppGenerator.add_vendor_templates :template, :settings_yml do |template,name,crm|
   template.source = File.join('..','..','vendor','oracle_on_demand','settings','settings.yml')
   template.destination = File.join("#{name}", 'vendor','oracle_on_demand','settings','settings.yml')

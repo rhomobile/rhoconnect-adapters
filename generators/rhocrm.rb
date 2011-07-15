@@ -41,6 +41,13 @@ module Rhocrm
     def configure_gemfile
       gem_file = File.join(@destination_root,"#{name}",'Gemfile')
       doc = "\ngem 'rhocrm', '#{gem_version}'\n"
+      
+      # also call vendor-defined method
+      vendor_module = Rhocrm.const_get(crm_name.to_sym)
+      vendor_dependencies = vendor_module.configure_gemfile
+      vendor_dependencies.each do |key, val|
+        doc += "gem '#{key}', '#{val}'\n"
+      end
       File.open(gem_file, 'a') {|f| f.write(doc) }
     end
     

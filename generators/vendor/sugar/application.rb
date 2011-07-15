@@ -1,5 +1,8 @@
-namespace Rhocrm
-  namespace Sugar
+require 'rhocrm'
+require 'vendor/sugar/sugar'
+
+module Rhocrm
+  module Sugar
     class Application < Rhosync::Base
       class << self
         def authenticate(username,password,session)
