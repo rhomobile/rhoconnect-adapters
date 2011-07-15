@@ -29,6 +29,7 @@ Currently, the following CRM backends are supported:
 
    - OracleOnDemand (for [Oracle CRM On Demand](http://crmondemand.oracle.com))
    - MsDynamics (for [Microsoft Dynamics CRM](http://www.microsoft.com/en-us/dynamics/default.aspx))
+   - Sugar (for [Sugar CRM](http://http://www.sugarcrm.com/crm/))
 
 The generated Rhocrm application structure will include typical [RhoSync](http://rhomobile.com/products/rhosync/)
 files (for example, application.rb and settings.yml). It will also create a special vendor directory `vendor/\<CRM\-backend\>`
@@ -109,6 +110,10 @@ All MsDynamics-specific settings are located in the **'vendor/ms_dynamics/settin
 In the file *'settings.yml'* you'll find the entries that are necessary to customize before running the app.
 These are:
 
+### Sugar settings
+All Sugar-specific settings are located in the **'vendor/sugar/settings'** directory.
+In the file *'settings.yml'* you'll find the entries that are necessary to customize before running the app.
+These are:
 
 ## Running the Rhocrm Application
 Once your Rhocrm application is customized and ready to run, you can start it like any other Rhosync app.
