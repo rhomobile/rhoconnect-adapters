@@ -1,0 +1,6 @@
+:test: 
+  :sugarcrm_uri: http://rhosugar.server-06.m8solutions.com
+:production: 
+  :sugarcrm_uri: http://rhosugar.server-06.m8solutions.com
+:development: 
+  :sugarcrm_uri: http://rhosugar.server-06.m8solutions.com

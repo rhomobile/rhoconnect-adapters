@@ -12,7 +12,7 @@ module Rhocrm
       standard_sources.index(name) != nil
     end
   end
-  @registered_backends = ['MsDynamics','OracleOnDemand'];
+  @registered_backends = ['MsDynamics','OracleOnDemand','Sugar'];
   @standard_sources = ['Account','Contact','Opportunity','Lead'];
   
   class Field
