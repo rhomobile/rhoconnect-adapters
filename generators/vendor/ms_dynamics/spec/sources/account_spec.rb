@@ -5,7 +5,6 @@ describe "Account" do
     before(:each) do
       sample_data_file = File.join(File.dirname(__FILE__),'..','..','vendor','ms_dynamics','spec_data','Account.yml')
       @sample_data = YAML.load_file(sample_data_file)['Account'] if sample_data_file and File.exist?(sample_data_file)
-      puts " we are here and #{@test_user}"
       setup_test_for Account,@test_user
     end
   

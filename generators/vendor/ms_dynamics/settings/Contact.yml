@@ -1,0 +1,39 @@
+Query_Fields:
+    # This is just a sample list of fields 
+    # that are used in QueryPage
+    contactid:
+      Label: Id
+      Type: id
+    gendercode:
+      Label: Gender
+      Type: Picklist 
+    firstname:
+      Label: First Name
+      Type: textinput
+    lastname:
+      Label: Last Name
+      Type: textinput
+    jobtitle:
+      Label: Job Title
+      Type: textinput
+    emailaddress1:
+      Label: E-mail
+      Type: textinput
+    telephone1:
+      Label: Main Phone
+      Type: textinput
+    mobilephone:
+      Label: Cell Phone
+      Type: textinput
+    description:
+      Label: Description
+      Type: textarea
+
+StaticPicklist:
+    # statically defined picklists
+    gender:
+        - Male
+        - Female
+
+ObjectFields:
+

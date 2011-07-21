@@ -118,7 +118,7 @@ module Rhocrm
       if File.exists? File.join(AppGenerator.source_root, source_filename)
         template.source = source_filename
       else
-        template.source = 'spec_helper.rb'
+        template.source = File.join('..','spec','spec_helper.rb')
       end
       template.destination = "#{name}/spec/spec_helper.rb"
     end
