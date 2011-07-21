@@ -1,0 +1,70 @@
+Query_Fields:
+    # This is just a sample list of fields 
+    # that are used in Query
+    accountid:
+        Label: Id
+        Type: id
+    name: 
+        Label: Name
+        Type: textinput
+    accountnumber:
+        Label: Account Number
+        Type: textinput
+    telephone1:
+        Label: Main Phone
+        Type: textinput    
+    emailaddress1:
+        Label: E-mail
+        Type: textinput
+    websiteurl:
+        Label: Web Site
+        Type: textinput
+    industrycode: 
+        Label: Industry
+        Type: Picklist
+    numberofemployees: 
+        Label: Number Of Employees
+        Type: textinput
+    description:
+        Label: Description
+        Type: textarea
+        
+StaticPicklist:
+    # statically defined Picklists
+    industrycode:
+        - Accounting
+        - Agriculture and Non-petrol Natural Resource Extraction
+        - Broadcasting
+        - Brokers
+        - Building Supply Retail
+        - Business Services
+        - Consulting
+        - Consumer Services
+        - Design, Direction, and Creative Management
+        - Distributors, Dispatchers, and Processors
+        - Doctor's Offices and Clinics
+        - Durable Manufacturing
+        - Eating and Drinking Places
+        - Entertainment Retail
+        - Equipment Renting and Leasing
+        - Financial
+        - Food and Tobacco Processing
+        - Inbound Capital Intensive Processing
+        - Inbound Repair and Services
+        - Insurance
+        - Legal Services
+        - Non-durable Merchandise Retail
+        - Outbound Consumer Service
+        - Petrochemical Extraction and Distribution
+        - Service Retail
+        - SIG Affiliation
+        - Social Services
+        - Special Outbound Trade Contractors
+        - Specialty Realty
+        - Transportation
+        - Utility Creation and Distribution
+        - Vehicle Retail
+        - Wholesale
+ObjectFields:
+    # these are reference fields to the other objects
+

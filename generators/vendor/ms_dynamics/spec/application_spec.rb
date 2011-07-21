@@ -9,8 +9,7 @@ describe "Application" do
     end
     
     it "should authenticate" do 
-      Application.authenticate(@test_user,@test_password,nil).should be_true
-      auth_info = Store.get_data("#{@test_user}-msdynamics-auth-info")["#{@test_user}"]
+      auth_info = Rhocrm::MsDynamics.load_auth_info(@test_user)
       now = Time.now
       should_be_between(auth_info['wlid_expires'],now,(now+(60 * 60 * 24)))
       should_be_between(auth_info['crm_ticket_expires'],now,(now+(60 * 60 * 24)))

@@ -114,7 +114,12 @@ module Rhocrm
       template.destination = "#{name}/application.rb"
     end
     template :spec_helper do |template|
-      template.source = File.join('..','spec','spec_helper.rb')
+      source_filename = File.join('..','..','vendor',underscore_crm,'spec','spec_helper.rb')
+      if File.exists? File.join(AppGenerator.source_root, source_filename)
+        template.source = source_filename
+      else
+        template.source = 'spec_helper.rb'
+      end
       template.destination = "#{name}/spec/spec_helper.rb"
     end
     template :vendor_application do |template|

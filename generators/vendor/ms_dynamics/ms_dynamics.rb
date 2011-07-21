@@ -23,5 +23,20 @@ module Rhocrm
       xmlns:wsa=\"http://www.w3.org/2005/08/addressing\" 
       xmlns:wst=\"http://schemas.xmlsoap.org/ws/2005/02/trust\"
     DESC
+    
+    class << self
+      def save_auth_info(username,auth_info)
+        Store.put_data(auth_info_key(username),"#{username}"=>auth_info)
+      end
+
+      def load_auth_info(username)
+        Store.get_data(auth_info_key(username))[username]
+      end
+
+      private
+      def auth_info_key(username)
+        "#{username}-msdynamics-auth-info"
+      end
+    end
   end
 end

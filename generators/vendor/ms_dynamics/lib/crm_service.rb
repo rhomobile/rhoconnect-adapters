@@ -55,15 +55,18 @@ module Rhocrm
           </RetrieveMultiple>")      
         doc = SoapService.send_request(@crm_service_url,message,get_action('RetrieveMultiple'))
         business_entities = SoapService.select_node(doc,'//cws6:BusinessEntity')
-        business_entities.collect do |business_entity|
+        result = {}
+        business_entities.each do |business_entity|
           attributes = {}
           business_entity.children.each do |attrib|
             attributes.merge!(attrib.name => attrib.text)
           end
           clean_attributes(entity_name,attributes)
+          attr_id = attributes["#{entity_name}id"]
+          result[attr_id] = attributes unless attr_id.nil?
         end
-      end  
-    
+        result
+      end 
     
       def create(entity_name,params)
         message = SoapService.compose_message(@message_header,
