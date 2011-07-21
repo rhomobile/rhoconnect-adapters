@@ -1,0 +1,49 @@
+Query_Fields:
+    # This is just a sample list of fields 
+    # that are used in Query
+    leadid:
+      Label: Id
+      Type: id
+    MrMrs:
+      Label: Salutation
+      Type: Picklist
+    firstname:
+      Label: First Name
+      Type: textinput
+    lastname:
+      Label: Last Name
+      Type: textinput
+    mobilephone:
+      Label: Cell Phone
+      Type: textinput
+    emailaddress1:
+      Label: E-mail
+      Type: textinput
+    companyname:
+      Label: Company
+      Type: textinput
+    jobtitle:
+      Label: Job Title
+      Type: textinput
+    estimatedvalue:
+      Label: Estimated Value
+      Type: textinput
+    estimatedclosedate:
+      Label: Estimated Close Date
+      Type:  textinput
+    address1_country:
+      Label: Country
+      Type: textinput
+    address1_city:
+      Label: City
+      Type: textinput
+    address1_line1:
+      Label: Street Address
+      Type: textinput  
+
+StaticPicklist:
+    # statically defined picklists
+ObjectFields:
+    # these are reference fields to the other objects
+
+

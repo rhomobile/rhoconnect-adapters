@@ -1,0 +1,24 @@
+Query_Fields:
+    # This is just a sample list of fields 
+    # that are used in Query
+    opportunityid:
+      Label: Id
+      Type: id 
+    name:
+      Label: Name
+      Type: textinput
+    description:
+      Label: Description
+      Type: textarea
+    estimatedvalue:
+      Label: Estimated Value
+      Type: textinput
+    closeprobability:
+      Label: Probability
+      Type: textinput
+
+StaticPicklist:
+    # statically defined picklists
+ObjectFields:
+    # these are reference fields to the other objects
+

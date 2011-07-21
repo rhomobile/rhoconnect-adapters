@@ -1,0 +1,12 @@
+Lead:
+  firstname: John
+  lastname: Smith
+  mobilephone: (555)111-1111
+  emailaddress1: john.smith@example.com
+  companyname: ABC Company
+  jobtitle: Sales Assistant
+  estimatedvalue: 40000
+  estimatedclosedate: 5/15/2011
+  address1_country: USA
+  address1_city: San Francisco
+  address1_line1: 111 Market St.
