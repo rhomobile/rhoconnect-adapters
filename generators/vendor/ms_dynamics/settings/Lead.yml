@@ -4,9 +4,6 @@ Query_Fields:
     leadid:
       Label: Id
       Type: id
-    MrMrs:
-      Label: Salutation
-      Type: Picklist
     firstname:
       Label: First Name
       Type: textinput
@@ -41,8 +38,11 @@ Query_Fields:
       Label: Street Address
       Type: textinput  
 
-StaticPicklist:
-    # statically defined picklists
+AttributeTypePicklists:
+      # these Picklists define values
+      # for artificially constructed fields
+      # that are really represent some other field's type
+          
 ObjectFields:
     # these are reference fields to the other objects
 

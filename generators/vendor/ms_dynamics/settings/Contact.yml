@@ -4,9 +4,6 @@ Query_Fields:
     contactid:
       Label: Id
       Type: id
-    gendercode:
-      Label: Gender
-      Type: Picklist 
     firstname:
       Label: First Name
       Type: textinput
@@ -29,11 +26,10 @@ Query_Fields:
       Label: Description
       Type: textarea
 
-StaticPicklist:
-    # statically defined picklists
-    gender:
-        - Male
-        - Female
+AttributeTypePicklists:
+    # these Picklists define values
+    # for artificially constructed fields
+    # that are really represent some other field's type
 
 ObjectFields:
 

@@ -19,6 +19,9 @@ Query_Fields:
     websiteurl:
         Label: Web Site
         Type: textinput
+    accountcategorycode:
+        Label: Category
+        Type: Picklist
     industrycode: 
         Label: Industry
         Type: Picklist
@@ -29,42 +32,10 @@ Query_Fields:
         Label: Description
         Type: textarea
         
-StaticPicklist:
-    # statically defined Picklists
-    industrycode:
-        - Accounting
-        - Agriculture and Non-petrol Natural Resource Extraction
-        - Broadcasting
-        - Brokers
-        - Building Supply Retail
-        - Business Services
-        - Consulting
-        - Consumer Services
-        - Design, Direction, and Creative Management
-        - Distributors, Dispatchers, and Processors
-        - Doctor's Offices and Clinics
-        - Durable Manufacturing
-        - Eating and Drinking Places
-        - Entertainment Retail
-        - Equipment Renting and Leasing
-        - Financial
-        - Food and Tobacco Processing
-        - Inbound Capital Intensive Processing
-        - Inbound Repair and Services
-        - Insurance
-        - Legal Services
-        - Non-durable Merchandise Retail
-        - Outbound Consumer Service
-        - Petrochemical Extraction and Distribution
-        - Service Retail
-        - SIG Affiliation
-        - Social Services
-        - Special Outbound Trade Contractors
-        - Specialty Realty
-        - Transportation
-        - Utility Creation and Distribution
-        - Vehicle Retail
-        - Wholesale
+AttributeTypePicklists:
+    # these Picklists define values
+    # for artificially constructed fields
+    # that are really represent some other field's type
+
 ObjectFields:
     # these are reference fields to the other objects
-

@@ -8,6 +8,7 @@ require 'rhocrm/soap_service'
 require 'vendor/ms_dynamics/lib/wlid_service'
 require 'vendor/ms_dynamics/lib/discovery_service'
 require 'vendor/ms_dynamics/lib/crm_service'
+require 'vendor/ms_dynamics/lib/crm_metadata_service'
 
 module Rhocrm
   module MsDynamics

@@ -5,8 +5,10 @@ Query_Fields:
         Label: Id
         Type: id
         
-StaticPicklist:
-    # Statically defined picklists
+AttributeTypePicklists:
+    # these Picklists define values
+    # for artificially constructed fields
+    # that are really represent some other field's type
     
 ObjectFields:
     # these are reference fields to the other objects

@@ -9,16 +9,27 @@ Query_Fields:
       Type: textinput
     description:
       Label: Description
-      Type: textarea
+      Type: textarea  
     estimatedvalue:
       Label: Estimated Value
       Type: textinput
     closeprobability:
       Label: Probability
       Type: textinput
+    customerid:
+      Label: Customer
+      Type: textinput
+    customerid_attrtype:
+      Label: Customer Type
+      Type: Picklist
 
-StaticPicklist:
-    # statically defined picklists
+AttributeTypePicklists:
+    # these Picklists define values
+    # for artificially constructed fields
+    # that are really represent some other field's type
+    customerid_attrtype:
+        - account
+        - contact
+
 ObjectFields:
     # these are reference fields to the other objects
-

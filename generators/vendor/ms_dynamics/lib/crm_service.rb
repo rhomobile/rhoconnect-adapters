@@ -34,12 +34,12 @@ module Rhocrm
         doc = SoapService.send_request(@crm_service_url,message,get_action('Retrieve'))
         res = {}
         attributes.each do |attribute|
-          res.merge!(attribute => MSDynamics::SoapService.select_node_text(doc,"//cws7:#{attribute}"))
+          res.merge!(attribute => SoapService.select_node_text(doc,"//cws7:#{attribute}"))
         end
         res
       end
         
-      def retrieve_multiple(entity_name, attributes, distinct=true, criteria_xml="")
+      def retrieve_multiple(entity_name, attributes, field_picklists_map, distinct=true, criteria_xml="")
         message = SoapService.compose_message(@message_header,
           "<RetrieveMultiple xmlns='http://schemas.microsoft.com/crm/2007/WebServices'>
             <query xmlns:q1='http://schemas.microsoft.com/crm/2006/Query' xsi:type='q1:QueryExpression'>
@@ -57,33 +57,38 @@ module Rhocrm
         business_entities = SoapService.select_node(doc,'//cws6:BusinessEntity')
         result = {}
         business_entities.each do |business_entity|
-          attributes = {}
-          business_entity.children.each do |attrib|
-            attributes.merge!(attrib.name => attrib.text)
+          record = {}
+          business_entity.children.each do |field|
+            type_field = field.attributes['type']
+            record.merge!("#{field.name}_attrtype" => type_field) unless type_field.nil?
+            field_value = field.text
+            # convert IntegerValues for Picklist types into User-friendly strings
+            field_value = field_picklists_map[field.name][field.text] unless field_picklists_map[field.name].nil?
+            record.merge!(field.name => field_value)
           end
-          clean_attributes(entity_name,attributes)
-          attr_id = attributes["#{entity_name}id"]
-          result[attr_id] = attributes unless attr_id.nil?
+          clean_attributes(entity_name,record)
+          field_id = record["#{entity_name}id"]
+          result[field_id] = record unless field_id.nil?
         end
         result
       end 
     
-      def create(entity_name,params)
+      def create(entity_name,params,types={})
         message = SoapService.compose_message(@message_header,
           "<Create xmlns='http://schemas.microsoft.com/crm/2007/WebServices'> 
             <entity xsi:type='#{entity_name}'>
-              #{get_params(params)} 
+              #{get_params(params,types)} 
             </entity> 
           </Create>")
         doc = SoapService.send_request(@crm_service_url,message,get_action('Create'))
         SoapService.select_node_text(doc,'//cws7:CreateResult')        
       end
     
-      def update(entity_name,entity_id,params)
+      def update(entity_name,entity_id,params,types={})
         message = SoapService.compose_message(@message_header,
           "<Update xmlns='http://schemas.microsoft.com/crm/2007/WebServices'>
             <entity xsi:type='#{entity_name}'>
-              #{get_params(params)}
+              #{get_params(params,types)}
               <#{entity_name}id>#{entity_id}</#{entity_name}id> 
             </entity> 
           </Update>")
@@ -114,8 +119,12 @@ module Rhocrm
         columns.to_s
       end
     
-      def get_params(params)
-        res = params.collect { |name,value| "<#{name}>#{value}</#{name}>" }
+      def get_params(params, types = {})
+        res = []
+        params.each do |name, value|
+          type_attr = " type=\"#{types[name].to_s}\"" unless types[name].nil?
+          res << "<#{name}#{type_attr.to_s}>#{value}</#{name}>"
+        end
         res.to_s
       end
     

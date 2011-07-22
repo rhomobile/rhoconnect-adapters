@@ -12,7 +12,7 @@ module Rhocrm
             # we probably should retry in such cases  
             wlid_ticket, wlid_expires = 
               Rhocrm::MsDynamics::WlidService.get_ticket(username,password)
-            crm_service_url, crm_ticket, crm_ticket_expires, user_organization = 
+            crm_service_url, crm_metadata_service_url, crm_ticket, crm_ticket_expires, user_organization = 
               Rhocrm::MsDynamics::DiscoveryService.get_crm_ticket(get_settings[:msdynamics_ticket_url],wlid_ticket)
             # store recieved tickets and associated information in redis for the future reference  
             Rhocrm::MsDynamics.save_auth_info(username,
@@ -20,6 +20,7 @@ module Rhocrm
                 "wlid_ticket" => wlid_ticket,
                 "wlid_expires" => wlid_expires.to_s,
                 "crm_service_url" => crm_service_url,
+                "crm_metadata_service_url" => crm_metadata_service_url,
                 "crm_ticket" => crm_ticket,
                 "crm_ticket_expires" => crm_ticket_expires.to_s,
                 "user_organization" => user_organization

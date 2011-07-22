@@ -37,7 +37,8 @@ module Rhocrm
           crm_ticket = select_node_text(doc,'//cds:CrmTicket')
           crm_ticket_expires = DateTime.parse(select_node_text(doc,'//cds:ExpirationDate'))
           crm_service_url = select_node_text(doc,'//cds:CrmServiceUrl')
-          [crm_service_url, crm_ticket, crm_ticket_expires, user_organization]
+          crm_metadata_service_url = select_node_text(doc, '//cds:CrmMetadataServiceUrl')
+          [crm_service_url, crm_metadata_service_url, crm_ticket, crm_ticket_expires, user_organization]
         end
     
       end
@@ -45,3 +46,4 @@ module Rhocrm
     end
   end
 end  
+

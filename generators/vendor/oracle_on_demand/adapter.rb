@@ -344,7 +344,7 @@ module Rhocrm
         end
         
         if request_fields['Id'] == nil
-          raise SourceAdapterObjectConflictError "'Id' field must be specified for the Update request"
+          raise SourceAdapterObjectConflictError.new("'Id' field must be specified for the Update request")
         end
         
         soap_body = "<wsdl:ListOf#{crm_object}>
@@ -363,19 +363,14 @@ module Rhocrm
       end
  
       def delete(delete_hash)
-        deleted_object_id = nil
-        request_fields = {}
-
-        fields.each do |element_name,element_def|
-          field_value = delete_hash[element_name]
-          if field_value != nil
-            request_fields[element_name] = field_value
-          end
+        deleted_object_id = delete_hash['Id'] || delete_hash['id']
+        
+        if deleted_object_id == nil
+          raise SourceAdapterObjectConflictError.new("'Id' field must be specified for the Delete request")
         end
         
-        if request_fields['Id'] == nil
-          raise SourceAdapterObjectConflictError "'Id' field must be specified for the Delete request"
-        end
+        request_fields = {}
+        request_fields['Id'] = deleted_object_id
         
         soap_body = "<wsdl:ListOf#{crm_object}>
             <wsdl:#{crm_object}>
@@ -385,7 +380,6 @@ module Rhocrm
 
         begin 
           execute_soap_action('Delete', soap_body)
-          deleted_object_id = delete_hash['Id']
         rescue RestClient::Exception => e
           raise e
         end
