@@ -16,3 +16,6 @@ StaticPicklist:
     
 ObjectFields:
     # these are reference fields to the other objects
+
+TitleFields:
+    - Id

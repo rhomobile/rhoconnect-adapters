@@ -64,3 +64,6 @@ StaticPicklist:
 ObjectFields:
     # these are reference fields to the other objects
     AccountName:
+
+TitleFields:
+    - OpportunityName

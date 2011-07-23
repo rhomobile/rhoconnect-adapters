@@ -33,3 +33,8 @@ AttributeTypePicklists:
 
 ObjectFields:
 
+TitleFields:
+    # these fields are concatenated to show the record
+    # in the Index form
+    - lastname
+    - firstname

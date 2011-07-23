@@ -33,3 +33,9 @@ AttributeTypePicklists:
 
 ObjectFields:
     # these are reference fields to the other objects
+
+TitleFields:
+    # these fields are concatenated to show the record
+    # in the Index form
+    - name
+

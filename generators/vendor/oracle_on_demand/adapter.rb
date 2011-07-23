@@ -1,5 +1,6 @@
 require 'rhocrm'
 require 'rhocrm/soap_service'
+require 'active_support/inflector'
 
 module Rhocrm
   module OracleOnDemand
@@ -42,7 +43,8 @@ module Rhocrm
       def initialize(source)
         super(source)
         @fields = {}   
-        @crm_object = self.class.name   
+        @crm_object = self.class.name
+        @title_fields = ['Id']
       end
       
       def configure_fields
@@ -66,6 +68,10 @@ module Rhocrm
     
         @object_fields = get_object_settings['ObjectFields']
         @object_fields = {} if @object_fields == nil
+        
+        # title fields are used in metadata to show 
+        # records in the list
+        @title_fields = get_object_settings['TitleFields']
         
         @fields
       end
@@ -225,6 +231,7 @@ module Rhocrm
         model_name = "" + crm_object
         model_name[0] = model_name[0,1].downcase
         record_sym = '@' + "#{model_name}"
+      
         fields.each do |element_name,element_def|
           next if element_name == 'Id'
       
@@ -293,9 +300,26 @@ module Rhocrm
           :id => "{{#{record_sym}/Id}}",
           :children => [edit_list]
         }
+        
+        # Index
+        title_field_metadata = @title_fields.collect { |field_name | "{{#{field_name.to_s}}} " }.to_s
+        object_rec = {
+          :object => "#{crm_object}",
+          :id => "{{Id}}",
+          :type => 'linkobj', 
+          :text => "#{title_field_metadata}" 
+        }
+
+        index_form = {
+          :object => "#{crm_object}",
+          :title => "#{crm_object.pluralize}",
+          :type => 'index_form',
+          :children => [object_rec],
+          :repeatable => "{{#{record_sym.pluralize}}}"
+        }
 
         # return JSON
-        { 'show' => show_form, 'new' => new_form, 'edit' => edit_form }.to_json
+        { 'index' => index_form, 'show' => show_form, 'new' => new_form, 'edit' => edit_form }.to_json
       end
  
       def create(create_hash,blob=nil)

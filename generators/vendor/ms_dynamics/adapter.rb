@@ -1,5 +1,6 @@
 require 'rhocrm'
 require 'vendor/ms_dynamics/ms_dynamics'
+require 'active_support/inflector'
 
 module Rhocrm
   module MsDynamics
@@ -10,7 +11,8 @@ module Rhocrm
       def initialize(source)
         super(source)
         @crm_object = self.class.name
-        @fields = {}      
+        @fields = {}   
+        @title_fields = ["#{crm_object.downcase}id"]   
       end
     
       def configure_fields
@@ -29,6 +31,10 @@ module Rhocrm
     
         @object_fields = get_object_settings['ObjectFields']
         @object_fields = {} if @object_fields == nil
+        
+        # title fields are used in metadata to show 
+        # records in the list
+        @title_fields = get_object_settings['TitleFields']
         
         @fields
       end
@@ -180,9 +186,26 @@ module Rhocrm
           :id => "{{#{record_sym}/#{crm_object.downcase}id}}",
           :children => [edit_list]
         }
+        
+        # Index
+        title_field_metadata = @title_fields.collect { |field_name | "{{#{field_name.to_s}}} " }.to_s
+        object_rec = {
+          :object => "#{crm_object}",
+          :id => "{{#{crm_object.downcase}id}}",
+          :type => 'linkobj', 
+          :text => "#{title_field_metadata}" 
+        }
 
+        index_form = {
+          :title => "#{crm_object.pluralize}",
+          :object => "#{crm_object}",
+          :type => 'index_form',
+          :children => [object_rec],
+          :repeatable => "{{#{record_sym.pluralize}}}"
+        }
+        
         # return JSON
-        { 'show' => show_form, 'new' => new_form, 'edit' => edit_form }.to_json
+        { 'index' => index_form, 'show' => show_form, 'new' => new_form, 'edit' => edit_form }.to_json
       end
       
       def create(create_hash,blob=nil)
