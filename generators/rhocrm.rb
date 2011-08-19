@@ -197,4 +197,8 @@ module Rhocrm
 end
 
 include Rhocrm
-Dir[File.join(File.dirname(__FILE__),'vendor',"#{Rhosync.under_score(ARGV[2])}",'templates.rb')].each { |vendor_templates| load vendor_templates }
+backend_arg = ARGV.last 
+if backend_arg == '--bare'
+  backend_arg = ARGV[2]
+end
+Dir[File.join(File.dirname(__FILE__),'vendor',"#{Rhosync.under_score(backend_arg)}",'templates.rb')].each { |vendor_templates| load vendor_templates }
