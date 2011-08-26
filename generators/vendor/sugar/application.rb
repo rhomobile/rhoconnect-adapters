@@ -6,10 +6,23 @@ module Rhocrm
     class Application < Rhosync::Base
       class << self
         def authenticate(username,password,session)
-          sugarcrm_uri = Application.get_settings(:sugarcrm_uri)
-          Store.put_value("#{username}:service_url", sugarcrm_uri)
-          
-          true # do some interesting authentication here...
+          sugarcrm_uri = Application.get_settings[:sugarcrm_uri]
+          begin
+            current_session = nil
+            current_session_obj_id = Store.get_value("#{username}:session_object_id")
+            if(current_session_obj_id == nil)
+              current_session = SugarCRM.connect(sugarcrm_uri, username, password, {:debug => true}).session
+            else
+              current_session =  SugarCRM.sessions[current_session_obj_id.to_i]
+              current_session.reconnect(sugarcrm_uri, username, password, {:debug => true})
+            end
+            Store.put_value("#{username}:service_url", sugarcrm_uri)
+            Store.put_value("#{username}:session_object_id", current_session.object_id)
+          rescue Exception => ex
+            warn "Can't authenticate user #{username}: " + ex.inspect
+            return false
+          end
+          true
         end
     
         def get_settings

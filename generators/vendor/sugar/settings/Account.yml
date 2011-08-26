@@ -1,0 +1,49 @@
+Query_Fields:
+    # This is just a sample list of fields 
+    # that are used in query
+    id:
+        Label: Id
+        Type: Id
+    name:
+        Label: Account Name
+        Type: textinput
+    account_type:
+        Label: Account Type
+        Type: Picklist
+    industry:
+        Label: Industry
+        Type: Picklist
+    annual_revenue:
+        Label: Annual Revenue
+        Type: textinput
+    billing_address_street:
+        Label: Billing Address Street
+        Type: textinput
+    billing_address_city:
+        Label: Billing Address City
+        Type: textinput
+    billing_address_state:
+        Label: Billing Address State
+        Type: textinput
+    billing_address_postalcode:
+        Label: Billing Address Zip Code
+        Type: textinput
+    billing_address_country:
+        Label: Billing Address Country
+        Type: textinput
+    phone_office:
+        Label: Main Phone
+        Type: textinput
+    website:
+        Label: WebSite
+        Type: textinput
+    employees:
+        Label: Number Of Employees
+        Type: textinput
+  
+ObjectFields:
+    # these are reference fields to the other objects
+    
+
+TitleFields:
+    - name

@@ -1,0 +1,13 @@
+Account:
+  name: My ACME Co.
+  account_type: Reseller
+  industry: Communications
+  annual_revenue: 500000
+  billing_address_street: 111 Main St. Suite 101
+  billing_address_city: San Francisco
+  billing_address_state: CA
+  billing_address_postalcode: 47999
+  billing_address_country: USA
+  phone_office: (333)-333-3333
+  website: www.acme.com
+  employees: 100

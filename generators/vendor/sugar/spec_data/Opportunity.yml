@@ -1,0 +1,10 @@
+Opportunity:
+  name: My Opportunity With Contact
+  opportunity_type: Existing Customer
+  account_name: ACME Co.
+  lead_source: Partner
+  amount: 25000
+  date_closed: 01/12/2011
+  next_step: Close the deal
+  sales_stage: Pre-sales
+  probability: 85%

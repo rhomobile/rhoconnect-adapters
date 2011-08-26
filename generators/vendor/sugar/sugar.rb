@@ -1,20 +1,31 @@
-require 'net/https'
-require 'pp'
-require 'set'
-require 'cgi'
-require 'uri'
-require 'base64'
-require 'rubygems'
-require 'active_support/core_ext'
-require 'json'
+require 'sugarcrm'
 
-require 'sugarcrm/session'
-require 'sugarcrm/module_methods'
-require 'sugarcrm/connection_pool'
-require 'sugarcrm/connection'
-require 'sugarcrm/exceptions'
-require 'sugarcrm/finders'
-require 'sugarcrm/attributes'
-require 'sugarcrm/associations'
-require 'sugarcrm/module'
-require 'sugarcrm/base'
+# this is patch to fix class name conflicts 
+# between Rhoconnect and SugarCRM gem code
+module SugarCRM
+  class Module
+    def registered?
+      @session.namespace_const.const_defined? @klass, false
+    end
+    
+    def to_class
+      SugarCRM.const_get(@klass, false).new
+    end
+  end
+end
+
+# this is a patch to fix incorrect 'logout' implementation
+module SugarCRM; class Connection
+  RESPONSE_IS_NOT_JSON << :logout
+  # Logs out of the Sugar user session.
+  def logout
+    login! unless logged_in?
+    json = <<-EOF
+      {
+          "session": "#{@sugar_session_id}"
+      }
+    EOF
+    json.gsub!(/^\s{6}/,'')
+    send!(:logout, json)
+  end
+end; end

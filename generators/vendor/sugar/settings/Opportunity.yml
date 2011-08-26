@@ -1,0 +1,44 @@
+Query_Fields:
+    # This is just a sample list of fields 
+    # that are used in query
+    id:
+        Label: Id
+        Type: Id
+    name:
+        Label: Opportunity Name
+        Type: textinput
+    opportunity_type:
+        Label: Type
+        Type: Picklist
+    amount:
+        Label: Opportunity Amount
+        Type: textinput
+    lead_source:
+        Label: Lead Source
+        Type: Picklist
+    account_name:
+        Label: Account Name
+        Type: object
+        Object: Account
+    sales_stage:
+        Label: Sales Stage
+        Type: Picklist
+    probability:
+        Label: Probability
+        Type: textinput
+    next_step:
+        Label: Next Step
+        Type: textinput
+    date_closed:
+        Label: Expected Close Date
+        Type: textinput
+    
+    
+    
+        
+ObjectFields:
+    # these are reference fields to the other objects
+    - account_name
+
+TitleFields:
+    - name

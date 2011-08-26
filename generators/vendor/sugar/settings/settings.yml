@@ -1,6 +1,6 @@
 :test: 
-  :sugarcrm_uri: http://rhosugar.server-06.m8solutions.com
+  :sugarcrm_uri: https://rhomobile.sugarondemand.com
 :production: 
-  :sugarcrm_uri: http://rhosugar.server-06.m8solutions.com
+  :sugarcrm_uri: https://rhomobile.sugarondemand.com
 :development: 
-  :sugarcrm_uri: http://rhosugar.server-06.m8solutions.com
+  :sugarcrm_uri: https://rhomobile.sugarondemand.com

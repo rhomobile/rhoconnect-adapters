@@ -1,0 +1,76 @@
+Query_Fields:
+    # This is just a sample list of fields 
+    # that are used in query
+    id:
+        Label: Id
+        Type: Id
+    salutation:
+        Label: Salutation
+        Type: Picklist
+    first_name:
+        Label: First Name
+        Type: textinput
+    last_name:
+        Label: Last Name
+        Type: textinput
+    title:
+        Label: Title
+        Type: textinput
+    department:
+        Label: Department
+        Type: textinput
+    phone_work:
+        Label: Office Phone
+        Type: textinput
+    email1:
+        Label: E-mail
+        Type: textinput
+    primary_address_street:
+        Label: Primary Address Street
+        Type: textinput
+    primary_address_city:
+        Label: Primary Address City
+        Type: textinput
+    primary_address_state:
+        Label: Primary Address State
+        Type: textinput
+    primary_address_postalcode:
+        Label: Primary Address Zip Code
+        Type: textinput
+    primary_address_country:
+        Label: Primary Address Country
+        Type: textinput
+    description:
+        Label: Description
+        Type: textarea
+    lead_source:
+        Label: Lead Source
+        Type: Picklist
+    status:
+        Label: Status
+        Type: Picklist
+    account_name:
+        Label: Account Name
+        Type: object
+        Object: Account
+    opportunity_name:
+        Label: Opportunity Name
+        Type: object
+        Object: Opportunity
+             
+ObjectFields:
+    # these are reference fields to the other objects
+    - account_name
+    - opportunity_name
+
+TitleFields:
+    - first_name
+    - last_name
+    
+    
+       
+      
+       
+       
+       
+       
