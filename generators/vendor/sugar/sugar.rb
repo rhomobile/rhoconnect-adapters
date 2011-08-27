@@ -1,15 +1,17 @@
 require 'sugarcrm'
 
-# this is patch to fix class name conflicts 
-# between Rhoconnect and SugarCRM gem code
-module SugarCRM
-  class Module
-    def registered?
-      @session.namespace_const.const_defined? @klass, false
-    end
+if not RUBY_VERSION =~ /1\.8/
+  # this is patch to fix class name conflicts 
+  # between Rhoconnect and SugarCRM gem code in Ruby 1.9.x
+  module SugarCRM
+    class Module
+      def registered?
+        @session.namespace_const.const_defined? @klass, false
+      end
     
-    def to_class
-      SugarCRM.const_get(@klass, false).new
+      def to_class
+        SugarCRM.const_get(@klass, false).new
+      end
     end
   end
 end

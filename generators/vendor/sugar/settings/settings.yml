@@ -1,6 +1,9 @@
 :test: 
   :sugarcrm_uri: https://rhomobile.sugarondemand.com
+  :debug_enabled: false
 :production: 
   :sugarcrm_uri: https://rhomobile.sugarondemand.com
+  :debug_enabled: false
 :development: 
   :sugarcrm_uri: https://rhomobile.sugarondemand.com
+  :debug_enabled: false

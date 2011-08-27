@@ -7,14 +7,15 @@ module Rhocrm
       class << self
         def authenticate(username,password,session)
           sugarcrm_uri = Application.get_settings[:sugarcrm_uri]
+          debug_enabled = Application.get_settings[:debug_enabled]
           begin
             current_session = nil
             current_session_obj_id = Store.get_value("#{username}:session_object_id")
             if(current_session_obj_id == nil)
-              current_session = SugarCRM.connect(sugarcrm_uri, username, password, {:debug => true}).session
+              current_session = SugarCRM.connect(sugarcrm_uri, username, password, {:debug => debug_enabled}).session
             else
               current_session =  SugarCRM.sessions[current_session_obj_id.to_i]
-              current_session.reconnect(sugarcrm_uri, username, password, {:debug => true})
+              current_session.reconnect(sugarcrm_uri, username, password, {:debug => debug_enabled})
             end
             Store.put_value("#{username}:service_url", sugarcrm_uri)
             Store.put_value("#{username}:session_object_id", current_session.object_id)

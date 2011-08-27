@@ -20,6 +20,10 @@ Query_Fields:
         Label: Account Name
         Type: object
         Object: Account
+    account_id:
+        Label: Account Id
+        Type: object
+        Object: Account
     phone_work:
         Label: Office Phone
         Type: textinput
@@ -44,9 +48,6 @@ Query_Fields:
     description:
         Label: Description
         Type: textarea
-    opportunity_role:
-        Label: Opportunity Role
-        Type: Picklist
     lead_source:
         Label: Lead Source
         Type: Picklist
@@ -54,6 +55,7 @@ Query_Fields:
 ObjectFields:
     # these are reference fields to the other objects
     - account_name
+    - account_id
 
 TitleFields:
     - first_name

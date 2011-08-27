@@ -20,6 +20,10 @@ Query_Fields:
         Label: Account Name
         Type: object
         Object: Account
+    account_id:
+        Label: Account Id
+        Type: object
+        Object: Account
     sales_stage:
         Label: Sales Stage
         Type: Picklist
@@ -39,6 +43,7 @@ Query_Fields:
 ObjectFields:
     # these are reference fields to the other objects
     - account_name
+    - account_id
 
 TitleFields:
     - name

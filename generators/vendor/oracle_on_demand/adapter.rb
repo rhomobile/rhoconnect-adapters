@@ -252,6 +252,7 @@ module Rhocrm
           when 'Picklist'
             new_field[:type] = 'select'
             values = []
+            # make first element a blanc value
             values[0] = nil
             values.concat @field_picklists[element_name]
             new_field[:values] = values
@@ -274,7 +275,7 @@ module Rhocrm
           :title => "#{crm_object} details",
           :object => "#{crm_object}",
           :model => "#{model_name}",
-          :id => "{{#{record_sym}/Id}}",
+          :id => "{{#{record_sym}/object}}",
           :children => [show_list]
         }
     
@@ -294,18 +295,18 @@ module Rhocrm
         edit_list[:children] = edit_fields
         edit_form = { 
           :type => 'update_form',
-          :title => "New #{crm_object}",
+          :title => "Edit #{crm_object}",
           :object => "#{crm_object}",
           :model => "#{model_name}",
-          :id => "{{#{record_sym}/Id}}",
+          :id => "{{#{record_sym}/object}}",
           :children => [edit_list]
         }
         
         # Index
-        title_field_metadata = @title_fields.collect { |field_name | "{{#{field_name.to_s}}} " }.to_s
+        title_field_metadata = @title_fields.collect { |field_name | "{{#{field_name.to_s}}} " }.join(' ')
         object_rec = {
           :object => "#{crm_object}",
-          :id => "{{Id}}",
+          :id => "{{object}}",
           :type => 'linkobj', 
           :text => "#{title_field_metadata}" 
         }

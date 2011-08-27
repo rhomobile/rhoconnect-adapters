@@ -97,7 +97,12 @@ Every CRM object file has the following entries:
 	ObjectFields: this one specifies a hash of fields 
 			that are actually references to other objects. 
          	For example, AccountName field for Contact object 
-			is really a reference to the corresponding Account object.
+			is really a reference to the corresponding Account object.'
+	
+	TitleFields: this setting specifies an array of fields
+				used in constructing the object's title in the 'Show' page
+				using the Metadata method. Typically, you will want to put 
+				`name` fields in here.
 
 For the default generated CRM object adapters, this file is pre-filled with information. However, you can customize it by including or excluding
 options. For custom adapters, you need to fill this file with relevant information. List of object's fields, for example, can be obtained
@@ -110,10 +115,78 @@ All MsDynamics-specific settings are located in the **'vendor/ms_dynamics/settin
 In the file *'settings.yml'* you'll find the entries that are necessary to customize before running the app.
 These are:
 
+- **:msdynamics_ticket_url:** <msdynamics_web_services_integration_url> - substitute the default URL with your MsDynamics account URL.
+
+For every source adapter based on CRM object there is a corresponding *'vendor/msdynamics/settings/\<CRM\-object\-name\>.yml'*
+file containing the descriptions for the Sugar CRM object.
+Every CRM object file has the following entries:
+
+	Query_Fields: hash of the objects's fields 
+			(each field's element has the value 
+			 in a form of the hash with the field's options , 
+			containing the following data):
+      	Label => <val> - display name of the field
+      	Type => <val> - type of the field data 
+			(textinput, textarea, Picklist, id, etc.)
+	
+	AttributeTypePicklists: this is a hash of picklist arrays
+			for artificially constructed fields
+	    	that are really represent some other field's type
+			for example, `customerid` field can be either
+			`account` or `contact`. In this case
+			field `customertype_attrtype` will represent `customerid` field's type
+			and will take values from the `AttributeTypePicklists`
+			array for the field `customerid_attrtype`
+
+	ObjectFields: this one specifies a hash of fields 
+			that are actually references to other objects. 
+         	For example, `account_name` field for Contact object 
+			is really a reference to the corresponding Account object.
+	
+	TitleFields: this setting specifies an array of fields
+				used in constructing the object's title in the 'Show' page
+				using the Metadata method. Typically, you will want to put 
+				`name` fields in here.
+
+For the default generated CRM object adapters, this file is pre-filled with information. However, you can customize it by including or excluding
+options. For custom adapters, you need to fill this file with relevant information. List of object's fields, for example, can be obtained
+from the MsDynamics documentation and then later used to fill the Query_Fields setting. Alternatively, user can customize the adapter and obtain 
+the desired list of object's fields using the MsDynamics SOAP API.
+
 ### Sugar settings
 All Sugar-specific settings are located in the **'vendor/sugar/settings'** directory.
 In the file *'settings.yml'* you'll find the entries that are necessary to customize before running the app.
 These are:
+
+- **:sugarcrm_uri:** <oracle_web_services_integration_url> - substitute the default URL with your OracleOnDemand account URL.
+- **:debug_enabled:** <true/false> - enable debug output of the backend HTTP transactions.
+
+For every source adapter based on CRM object there is a corresponding *'vendor/sugar/settings/\<CRM\-object\-name\>.yml'*
+file containing the descriptions for the Sugar CRM object.
+Every CRM object file has the following entries:
+
+	Query_Fields: hash of the objects's fields 
+			(each field's element has the value 
+			 in a form of the hash with the field's options , 
+			containing the following data):
+      	Label => <val> - display name of the field
+      	Type => <val> - type of the field data 
+			(textinput, textarea, Picklist, id, etc.)
+
+	ObjectFields: this one specifies a hash of fields 
+			that are actually references to other objects. 
+         	For example, `account_name` field for Contact object 
+			is really a reference to the corresponding Account object.
+	
+	TitleFields: this setting specifies an array of fields
+				used in constructing the object's title in the 'Show' page
+				using the Metadata method. Typically, you will want to put 
+				`name` fields in here.
+
+For the default generated CRM object adapters, this file is pre-filled with information. However, you can customize it by including or excluding
+options. For custom adapters, you need to fill this file with relevant information. List of object's fields, for example, can be obtained
+from the SugarCRM documentation and then later used to fill the Query_Fields setting. Alternatively, user can customize the adapter and obtain 
+the desired list of object's fields using the SugarCRM REST API.
 
 ## Running the Rhocrm Application
 Once your Rhocrm application is customized and ready to run, you can start it like any other Rhosync app.

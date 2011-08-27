@@ -160,7 +160,7 @@ module Rhocrm
           :title => "#{crm_object} details",
           :object => "#{crm_object}",
           :model => "#{model_name}",
-          :id => "{{#{record_sym}/#{crm_object.downcase}id}}",
+          :id => "{{#{record_sym}/object}}",
           :children => [show_list]
         }
     
@@ -180,18 +180,18 @@ module Rhocrm
         edit_list[:children] = edit_fields
         edit_form = { 
           :type => 'update_form',
-          :title => "New #{crm_object}",
+          :title => "Edit #{crm_object}",
           :object => "#{crm_object}",
           :model => "#{model_name}",
-          :id => "{{#{record_sym}/#{crm_object.downcase}id}}",
+          :id => "{{#{record_sym}/object}}",
           :children => [edit_list]
         }
         
         # Index
-        title_field_metadata = @title_fields.collect { |field_name | "{{#{field_name.to_s}}} " }.to_s
+        title_field_metadata = @title_fields.collect { |field_name | "{{#{field_name.to_s}}} " }.join(' ')
         object_rec = {
           :object => "#{crm_object}",
-          :id => "{{#{crm_object.downcase}id}}",
+          :id => "{{object}}",
           :type => 'linkobj', 
           :text => "#{title_field_metadata}" 
         }
