@@ -3,9 +3,9 @@
 require 'rubygems'
 require 'templater'
 
-require File.join(File.dirname(__FILE__), '..','generators','rhocrm')
+require File.join(File.dirname(__FILE__), '..','generators','rhoconnect-adapters')
 $:.unshift File.join(File.dirname(__FILE__),'..','lib')
-require File.join(File.dirname(__FILE__), '..','lib','rhocrm')
+require File.join(File.dirname(__FILE__), '..','lib','rhoconnect-adapters')
 
 # Stub this method to force 1.8 compatibility (come on templater!)
 class Encoding
@@ -31,5 +31,5 @@ class String
   end
 end
 
-Rhocrm.run_cli(Dir.pwd, 'rhocrm', Rhocrm::VERSION, ARGV)
+RhoconnectAdapters.run_cli(Dir.pwd, 'rhoconnect-adapters', RhoconnectAdapters::VERSION, ARGV)
 

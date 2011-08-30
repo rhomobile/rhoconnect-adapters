@@ -4,17 +4,17 @@ require 'rhoconnect'
 require File.join('rhoconnect', '..','..','generators','rhoconnect')
 require 'templater'
 
-require 'rhocrm'
+require 'rhoconnect-adapters'
 
-module Rhocrm
+module RhoconnectAdapters
   extend Templater::Manifold
-  extend Rhocrm
+  extend RhoconnectAdapters
   
   class NotSupportedBackendError < Templater::MalformattedArgumentError
   end
   
   desc <<-DESC
-    Rhocrm generator
+    Rhoconnect-adapters generator
   DESC
   
   class BaseGenerator < Templater::Generator
@@ -26,6 +26,23 @@ module Rhocrm
       Rhoconnect.under_score(name)
     end
     
+    def configure_gemfile
+      gem_file = File.join(@destination_root,"#{name}",'Gemfile')
+      doc = "\ngem 'rhoconnect-adapters', '#{gem_version}'\n"
+      File.open(gem_file, 'a') {|f| f.write(doc) }
+    end
+    
+    def self.invoke_generator(gen_name, excludes = nil)
+      invoke gen_name do |ext_gen| 
+        if not excludes.nil?
+          ext_gen.templates.delete_if {|t| excludes.index(t.name) != nil }
+        end
+        ext_gen.new(destination_root, {}, name)
+      end
+    end
+  end
+    
+  class CRMBaseGenerator < BaseGenerator
     def underscore_crm
       Rhoconnect.under_score(crm)
     end
@@ -38,21 +55,8 @@ module Rhocrm
       VERSION
     end
     
-    def configure_gemfile
-      gem_file = File.join(@destination_root,"#{name}",'Gemfile')
-      doc = "\ngem 'rhocrm', '#{gem_version}'\n"
-      
-      # also call vendor-defined method
-      vendor_module = Rhocrm.const_get(crm_name.to_sym)
-      vendor_dependencies = vendor_module.configure_gemfile
-      vendor_dependencies.each do |key, val|
-        doc += "gem '#{key}', '#{val}'\n"
-      end
-      File.open(gem_file, 'a') {|f| f.write(doc) }
-    end
-    
     def self.check_valid_backend(name)
-      if not Rhocrm.valid_backend?(name)
+      if not RhoconnectAdapters::CRM.valid_backend?(name)
         puts "Requested CRM backend '#{name}' is not supported."
         puts ''
         puts 'List of supported backends:'
@@ -64,13 +68,17 @@ module Rhocrm
       end
     end
     
-    def self.invoke_generator(gen_name, excludes = nil)
-      invoke gen_name do |ext_gen| 
-        if not excludes.nil?
-          ext_gen.templates.delete_if {|t| excludes.index(t.name) != nil }
-        end
-        ext_gen.new(destination_root, {}, name)
+    def self.configure_gemfile
+      super
+      
+      # also call vendor-defined method
+      gem_file = File.join(@destination_root,"#{name}",'Gemfile')
+      vendor_module = RhoconnectAdapters::CRM.const_get(crm_name.to_sym)
+      vendor_dependencies = vendor_module.configure_gemfile
+      vendor_dependencies.each do |key, val|
+        doc += "gem '#{key}', '#{val}'\n"
       end
+      File.open(gem_file, 'a') {|f| f.write(doc) }
     end
     
     def self.add_vendor_templates(verb, tname, &block)
@@ -81,13 +89,13 @@ module Rhocrm
     
     def initialize(generator_name, generator_class, *arguments)
       super(generator_name, generator_class, *arguments)
-      Rhocrm::BaseGenerator.check_valid_backend(arguments[1])
+      RhoconnectAdapters::CRMBaseGenerator.check_valid_backend(arguments[1])
     end
   end
   
-  class AppGenerator < BaseGenerator
+  class CRMAppGenerator < CRMBaseGenerator
     def self.source_root
-      File.join(File.dirname(__FILE__), 'templates', 'application')
+      File.join(File.dirname(__FILE__), 'crm', 'templates', 'application')
     end
     
     desc <<-DESC
@@ -99,7 +107,7 @@ module Rhocrm
     DESC
     
     first_argument :name, :required => true, :desc => "application name"
-    second_argument :crm, :required => true, :desc => "supported CRM backend #{Rhocrm.registered_backends.inspect}"
+    second_argument :crm, :required => true, :desc => "supported CRM backend #{RhoconnectAdapter::CRM.registered_backends.inspect}"
     #third_argument :__bare, :required => false, :desc => "generate CRM application without standard sources", :as => :boolean
     option :bare, :default => false, :desc => "generate CRM application without standard sources", :as => :boolean
     
@@ -136,16 +144,16 @@ module Rhocrm
       # after app is generated , generate the standard sources
       # but only if --bare is not specified
       if not bare
-        Rhocrm.standard_sources.each do |source|
-          Rhocrm.run_cli(File.join(destination_root,name), 'rhocrm', Rhocrm::VERSION, ['source', "#{source}", crm])
+        RhoconnectAdapters::CRM.standard_sources.each do |source|
+          RhoconnectAdapters.run_cli(File.join(destination_root,name), 'rhoconnect-adapters', Rhocrm::VERSION, ['crmsource', "#{source}", crm])
         end
       end
     end
   end
      
-  class SourceGenerator < BaseGenerator
+  class CRMSourceGenerator < CRMBaseGenerator
     def self.source_root
-      File.join(File.dirname(__FILE__), 'templates', 'source')
+      File.join(File.dirname(__FILE__), 'crm', 'templates', 'source')
     end
 
     desc <<-DESC
@@ -153,7 +161,7 @@ module Rhocrm
       
       Required:
         name        - source name(i.e. Account)
-        CRM backend - supported CRM backend #{Rhocrm.registered_backends.inspect}
+        CRM backend - supported CRM backend #{RhoconnectAdapters::CRM.registered_backends.inspect}
     DESC
 
     first_argument :name, :required => true, :desc => "source name"
@@ -180,7 +188,7 @@ module Rhocrm
       end
     end
     template :source_spec do |template|
-      source_filename = File.join('..','..','vendor',underscore_crm,'spec','sources',"#{underscore_name}_spec.rb")
+      source_filename = File.join('..','crm','vendor',underscore_crm,'spec','sources',"#{underscore_name}_spec.rb")
       if File.exists? File.join(SourceGenerator.source_root, source_filename)
         template.source = source_filename
       else
@@ -192,13 +200,16 @@ module Rhocrm
   
   add_private :rhoconnect_app, Rhoconnect::AppGenerator
   add_private :rhoconnect_source, Rhoconnect::SourceGenerator
-  add :app, AppGenerator
-  add :source, SourceGenerator
+  add :crmapp, CRMAppGenerator
+  add :crmsource, CRMSourceGenerator
 end
 
-include Rhocrm
-backend_arg = ARGV.last 
-if backend_arg == '--bare'
-  backend_arg = ARGV[2]
+include RhoconnectAdapters
+
+if ARGV[0] == 'crmapp' || ARGV[0] == 'crmsource'
+  backend_arg = ARGV.last 
+  if backend_arg == '--bare'
+    backend_arg = ARGV[2]
+  end
+  Dir[File.join(File.dirname(__FILE__),'crm','vendor',"#{Rhoconnect.under_score(backend_arg)}",'templates.rb')].each { |vendor_templates| load vendor_templates }
 end
-Dir[File.join(File.dirname(__FILE__),'vendor',"#{Rhoconnect.under_score(backend_arg)}",'templates.rb')].each { |vendor_templates| load vendor_templates }

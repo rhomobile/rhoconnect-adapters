@@ -1,17 +1,17 @@
 # -*- encoding: utf-8 -*-
 $:.push File.expand_path("../lib", __FILE__)
-require "rhocrm/version"
+require "rhoconnect-adapters/version"
 
 Gem::Specification.new do |s|
-  s.name        = "rhocrm"
-  s.version     = Rhocrm::VERSION
+  s.name        = "rhoconnect-adapters"
+  s.version     = RhoconnectAdapters::VERSION
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Rhomobile"]
   s.date        = Time.now.strftime('%Y-%m-%d')
   s.email       = %q{dev@rhomobile.com}
-  s.homepage    = %q{http://rhomobile.com/products/rhocrm}
-  s.summary     = %q{Rhoconnect adaptors}
-  s.description = %q{Rhoconnect out-of-the box adaptors}
+  s.homepage    = %q{http://rhomobile.com/products/rhoconnect-adapters}
+  s.summary     = %q{Rhoconnect adapters}
+  s.description = %q{Rhoconnect out-of-the box adapters}
 
   s.rubyforge_project = nil
 
