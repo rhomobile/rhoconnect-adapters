@@ -3,7 +3,7 @@ require 'vendor/ms_dynamics/ms_dynamics'
 
 module Rhocrm
   module MsDynamics
-    class Application < Rhosync::Base
+    class Application < Rhoconnect::Base
       class << self
         def authenticate(username,password,session)
           begin

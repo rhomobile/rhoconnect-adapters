@@ -1,7 +1,7 @@
 require 'rubygems'
-require 'rhosync'
+require 'rhoconnect'
 
-require File.join('rhosync', '..','..','generators','rhosync')
+require File.join('rhoconnect', '..','..','generators','rhoconnect')
 require 'templater'
 
 require 'rhocrm'
@@ -23,11 +23,11 @@ module Rhocrm
     end
     
     def underscore_name
-      Rhosync.under_score(name)
+      Rhoconnect.under_score(name)
     end
     
     def underscore_crm
-      Rhosync.under_score(crm)
+      Rhoconnect.under_score(crm)
     end
     
     def crm_name
@@ -91,7 +91,7 @@ module Rhocrm
     end
     
     desc <<-DESC
-      Generates a new rhosync CRM application.
+      Generates a new rhoconnect CRM application.
       
       Required:
         name        - application name
@@ -107,8 +107,8 @@ module Rhocrm
     actions.clear
     
     # purpose of this call is to invoke all templates in 
-    # the Rhosync::Generator except the :application - which is overriden here
-    invoke_generator :rhosync_app, [:application, :spec_helper]
+    # the Rhoconnect::Generator except the :application - which is overriden here
+    invoke_generator :rhoconnect_app, [:application, :spec_helper]
     template :application do |template|
       template.source = 'application.rb'
       template.destination = "#{name}/application.rb"
@@ -162,7 +162,7 @@ module Rhocrm
     # to prevent re-loading on subsequent loads
     actions.clear
     
-    invoke_generator :rhosync_source, [:source, :source_spec]
+    invoke_generator :rhoconnect_source, [:source, :source_spec]
     template :source do |template|
       template.source = 'source_adapter.rb'
       template.destination = "sources/#{underscore_name}.rb"
@@ -190,8 +190,8 @@ module Rhocrm
     end
   end
   
-  add_private :rhosync_app, Rhosync::AppGenerator
-  add_private :rhosync_source, Rhosync::SourceGenerator
+  add_private :rhoconnect_app, Rhoconnect::AppGenerator
+  add_private :rhoconnect_source, Rhoconnect::SourceGenerator
   add :app, AppGenerator
   add :source, SourceGenerator
 end
@@ -201,4 +201,4 @@ backend_arg = ARGV.last
 if backend_arg == '--bare'
   backend_arg = ARGV[2]
 end
-Dir[File.join(File.dirname(__FILE__),'vendor',"#{Rhosync.under_score(backend_arg)}",'templates.rb')].each { |vendor_templates| load vendor_templates }
+Dir[File.join(File.dirname(__FILE__),'vendor',"#{Rhoconnect.under_score(backend_arg)}",'templates.rb')].each { |vendor_templates| load vendor_templates }

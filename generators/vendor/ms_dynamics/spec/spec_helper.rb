@@ -7,19 +7,19 @@ ROOT_PATH = File.expand_path(File.join(File.dirname(__FILE__),'..'))
 require 'bundler'
 Bundler.require(:default, ENV['RHO_ENV'].to_sym)
 
-# Try to load vendor-ed rhosync, otherwise load the gem
+# Try to load vendor-ed rhoconnect, otherwise load the gem
 begin
-  require 'vendor/rhosync/lib/rhosync'
+  require 'vendor/rhoconnect/lib/rhoconnect'
 rescue LoadError
-  require 'rhosync'
+  require 'rhoconnect'
 end
 
 $:.unshift File.join(File.dirname(__FILE__), "..") # FIXME:
-# Load our rhosync application
+# Load our rhoconnect application
 require 'application'
-include Rhosync
+include Rhoconnect
 
-require 'rhosync/test_methods'
+require 'rhoconnect/test_methods'
 
 # Monkey patch to fix the following issue:
 # /Library/Ruby/Gems/1.8/gems/rspec-core-2.5.1/lib/rspec/core/shared_example_group.rb:45:
@@ -45,10 +45,10 @@ module TestHelpers
 end
 
 shared_examples_for "SpecHelper" do
-  include Rhosync::TestMethods
+  include Rhoconnect::TestMethods
   
   def load_credentials(backend)
-    file = YAML.load_file(File.join(ROOT_PATH,'..','rhocrm-test',"#{Rhosync.under_score(backend)}.yml"))
+    file = YAML.load_file(File.join(ROOT_PATH,'..','rhocrm-test',"#{Rhoconnect.under_score(backend)}.yml"))
     return file.nil? ? {} : file
   end
   

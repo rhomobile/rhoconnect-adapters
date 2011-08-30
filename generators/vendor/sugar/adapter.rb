@@ -211,7 +211,7 @@ module Rhocrm
       
       def sync
         # Manipulate @result before it is saved, or save it
-        # yourself using the Rhosync::Store interface.
+        # yourself using the Rhoconnect::Store interface.
         # By default, super is called below which simply saves @result
         super
       end

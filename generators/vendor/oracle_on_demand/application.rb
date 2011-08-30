@@ -3,7 +3,7 @@ require 'rest-client'
 
 module Rhocrm
   module OracleOnDemand
-    class Application < Rhosync::Base
+    class Application < Rhoconnect::Base
       class << self
         def authenticate(username,password,session)
           begin

@@ -10,8 +10,8 @@ Gem::Specification.new do |s|
   s.date        = Time.now.strftime('%Y-%m-%d')
   s.email       = %q{dev@rhomobile.com}
   s.homepage    = %q{http://rhomobile.com/products/rhocrm}
-  s.summary     = %q{Rhosync CRM adaptors}
-  s.description = %q{RhoSync out-of-the box CRM adaptors}
+  s.summary     = %q{Rhoconnect adaptors}
+  s.description = %q{Rhoconnect out-of-the box adaptors}
 
   s.rubyforge_project = nil
 
@@ -27,7 +27,7 @@ Gem::Specification.new do |s|
   ]
 
   s.add_dependency('bundler', '~> 1.0')  
-  s.add_dependency('rhosync', '>= 3.0.0')
+  s.add_dependency('rhoconnect', '>= 3.0.0')
   s.add_dependency('activesupport', '>= 3.0.0')
   s.add_dependency('i18n', '>= 0.6.0')
   s.add_dependency('rake', '~> 0.9.2')

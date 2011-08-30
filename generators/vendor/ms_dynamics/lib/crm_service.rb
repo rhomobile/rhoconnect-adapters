@@ -79,7 +79,7 @@ module Rhocrm
             <entity xsi:type='#{entity_name}'>
               #{get_params(params,types)} 
             </entity> 
-          </Create>")
+          </Create>") 
         doc = SoapService.send_request(@crm_service_url,message,get_action('Create'))
         SoapService.select_node_text(doc,'//cws7:CreateResult')        
       end
@@ -122,8 +122,8 @@ module Rhocrm
       def get_params(params, types = {})
         res = []
         params.each do |name, value|
-          type_attr = " type=\"#{types[name].to_s}\"" unless types[name].nil?
-          res << "<#{name}#{type_attr.to_s}>#{value}</#{name}>"
+          type_attr = " type='#{types[name].to_s}'" unless types[name].nil?
+          res << "<#{name}#{type_attr}>#{value}</#{name}>"
         end
         res.to_s
       end

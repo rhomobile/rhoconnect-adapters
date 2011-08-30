@@ -1,11 +1,11 @@
 Rhocrm
 ===
 
-Rhocrm is a ruby library containing a collection of the out-of-box [RhoSync](http://rhomobile.com/products/rhosync) applications 
+Rhocrm is a ruby library containing a collection of the out-of-box [RhoConnect](http://rhomobile.com/products/rhoconnect) applications 
 for various CRM backends.  
 
-With Rhocrm, you can utilize the pre-built set of [RhoSync](http://rhomobile.com/products/rhosync/) applications 
-for popular CRM backends (SalesForce, Oracle CRM On Demand, Sugar CRM, etc.). Also, this library includes support for writing your own [RhoSync](http://rhomobile.com/products/rhosync/)
+With Rhocrm, you can utilize the pre-built set of [RhoConnect](http://rhomobile.com/products/rhoconnect/) applications 
+for popular CRM backends (SalesForce, Oracle CRM On Demand, Sugar CRM, etc.). Also, this library includes support for writing your own [RhoConnect](http://rhomobile.com/products/rhoconnect/)
 CRM applications to extend or customize the default functionality.
 
 ## Setup
@@ -15,8 +15,8 @@ Install the 'rhocrm' gem by using the following command:
 
 
 ## Usage
-The 'rhocrm' command creates CRM-based [RhoSync](http://rhomobile.com/products/rhosync/) applications.
-Visit the [RhoSync](http://rhomobile.com/products/rhosync/) website for more information.
+The 'rhocrm' command creates CRM-based [RhoConnect](http://rhomobile.com/products/rhoconnect/) applications.
+Visit the [RhoConnect](http://rhomobile.com/products/rhoconnect/) website for more information.
 
 ### Generating Standard Application
 
@@ -31,7 +31,7 @@ Currently, the following CRM backends are supported:
    - MsDynamics (for [Microsoft Dynamics CRM](http://www.microsoft.com/en-us/dynamics/default.aspx))
    - Sugar (for [Sugar CRM](http://http://www.sugarcrm.com/crm/))
 
-The generated Rhocrm application structure will include typical [RhoSync](http://rhomobile.com/products/rhosync/)
+The generated Rhocrm application structure will include typical [RhoConnect](http://rhomobile.com/products/rhoconnect/)
 files (for example, application.rb and settings.yml). It will also create a special vendor directory `vendor/\<CRM\-backend\>`
 containing all support files specific for the corresponding CRM backend.
 
@@ -189,10 +189,10 @@ from the SugarCRM documentation and then later used to fill the Query_Fields set
 the desired list of object's fields using the SugarCRM REST API.
 
 ## Running the Rhocrm Application
-Once your Rhocrm application is customized and ready to run, you can start it like any other Rhosync app.
+Once your Rhocrm application is customized and ready to run, you can start it like any other Rhoconnect app.
 Type the following command in the CRM application's root directory:
 
-	rake rhosync:start
+	rake rhoconnect:start
 	
 
 ## Meta

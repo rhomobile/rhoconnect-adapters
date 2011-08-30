@@ -42,7 +42,7 @@ describe "Generator" do
       it "should not generate any sources with --bare option for #{backend}" do
         SecureRandom.should_receive(:hex).with(64).any_number_of_times
         Rhocrm.standard_sources.each do |source|
-          source_name = Rhosync.under_score(source)
+          source_name = Rhoconnect.under_score(source)
           @generator.should_not create("/tmp/#{appname}/sources/#{source}.rb")
         end
       end
@@ -58,8 +58,8 @@ describe "Generator" do
         SecureRandom.should_receive(:hex).with(64).any_number_of_times
         [ 
           'application.rb',
-          "vendor/#{Rhosync.under_score(backend)}/application.rb",
-          "vendor/#{Rhosync.under_score(backend)}/adapter.rb",
+          "vendor/#{Rhoconnect.under_score(backend)}/application.rb",
+          "vendor/#{Rhoconnect.under_score(backend)}/adapter.rb",
           'spec/spec_helper.rb'
           ].each do |template|
             @generator.should create("/tmp/#{appname}/#{template}")
@@ -69,7 +69,7 @@ describe "Generator" do
       it "should generate standard #{Rhocrm.standard_sources.inspect} sources by default for #{backend}" do
         SecureRandom.should_receive(:hex).with(64).any_number_of_times
         Rhocrm.standard_sources.each do |source|
-          source_name = Rhosync.under_score(source)
+          source_name = Rhoconnect.under_score(source)
           File.should be_exist("/tmp/#{appname}/sources/#{source_name}.rb")
         end
       end
@@ -105,8 +105,8 @@ describe "Generator" do
       end
         
       it "should create new source adapter and spec" do
-        @generator.should create("/tmp/#{appname}/sources/#{Rhosync.under_score(source)}.rb")
-        @generator.should create("/tmp/#{appname}/spec/sources/#{Rhosync.under_score(source)}_spec.rb")
+        @generator.should create("/tmp/#{appname}/sources/#{Rhoconnect.under_score(source)}.rb")
+        @generator.should create("/tmp/#{appname}/spec/sources/#{Rhoconnect.under_score(source)}_spec.rb")
       end
     end
   end

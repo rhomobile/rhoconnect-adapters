@@ -10,7 +10,7 @@ describe "Application" do
     
     it "should authenticate" do 
       auth_info = Rhocrm::MsDynamics.load_auth_info(@test_user)
-      now = Time.now
+      now = DateTime.now
       should_be_between(auth_info['wlid_expires'],now,(now+(60 * 60 * 24)))
       should_be_between(auth_info['crm_ticket_expires'],now,(now+(60 * 60 * 24)))
     end

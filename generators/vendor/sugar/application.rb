@@ -3,7 +3,7 @@ require 'vendor/sugar/sugar'
 
 module Rhocrm
   module Sugar
-    class Application < Rhosync::Base
+    class Application < Rhoconnect::Base
       class << self
         def authenticate(username,password,session)
           sugarcrm_uri = Application.get_settings[:sugarcrm_uri]

@@ -39,7 +39,7 @@ module Rhocrm
       def load_templater(backend)
         cleanup_templater(Rhocrm::AppGenerator)
         cleanup_templater(Rhocrm::SourceGenerator)
-        Dir[File.join(File.dirname(__FILE__),'..','generators','vendor',"#{Rhosync.under_score(backend)}",'templates.rb')].each { |vendor_templates| load vendor_templates }
+        Dir[File.join(File.dirname(__FILE__),'..','generators','vendor',"#{Rhoconnect.under_score(backend)}",'templates.rb')].each { |vendor_templates| load vendor_templates }
       end
 
       def generate_sample_app(destination_root,options,appname,backend)

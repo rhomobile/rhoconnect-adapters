@@ -204,7 +204,6 @@ module Rhocrm
                id_field = Rhocrm::SoapService.select_node_text(record, "#{crm_object}doc:Id")
                converted_record = {}
                # grab only the allowed fields 
-               # and map oracle field names into RhoSync field names
                fields.each do |element_name,element_def|
                  converted_record[element_name] = Rhocrm::SoapService.select_node_text(record, "#{crm_object}doc:#{element_name}")
                end
@@ -218,7 +217,7 @@ module Rhocrm
           
       def sync
         # Manipulate @result before it is saved, or save it 
-        # yourself using the Rhosync::Store interface.
+        # yourself using the Rhoconnect::Store interface.
         # By default, super is called below which simply saves @result
         super
       end
