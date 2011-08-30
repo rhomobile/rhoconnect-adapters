@@ -45,7 +45,7 @@ shared_examples_for "SpecHelper" do
   include Rhoconnect::TestMethods
   
   def load_credentials(backend)
-    file = YAML.load_file(File.join(ROOT_PATH,'..','rhocrm-test',"#{Rhoconnect.under_score(backend)}.yml"))
+    file = YAML.load_file(File.join(ROOT_PATH,'..','rhoconnect-adapters-test',"#{Rhoconnect.under_score(backend)}.yml"))
     return file.nil? ? {} : file
   end
   

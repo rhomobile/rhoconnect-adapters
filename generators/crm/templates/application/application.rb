@@ -1,6 +1,6 @@
 require 'vendor/<%=underscore_crm%>/application'
 
-class Application < Rhocrm::<%=crm_name%>::Application
+class Application < RhoconnectAdapters::CRM::<%=crm_name%>::Application
   class << self
     def backend
       '<%=underscore_crm%>'

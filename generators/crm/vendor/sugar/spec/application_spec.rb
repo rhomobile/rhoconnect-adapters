@@ -12,7 +12,7 @@ describe "Application" do
       Application.authenticate(@test_user,@test_password,nil).should be_true
     end
     
-    it "should authenticate using RhoCRM.reconnect" do 
+    it "should authenticate using SugarCRM.reconnect" do 
       Application.authenticate(@test_user,@test_password,nil).should be_true
       Application.authenticate(@test_user,@test_password,nil).should be_true
     end

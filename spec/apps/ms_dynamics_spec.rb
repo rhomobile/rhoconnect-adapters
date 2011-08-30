@@ -9,8 +9,8 @@ describe "MsDynamics App RUNNER" do
   end
   
   it "should run all the specs for standard #{backend} app " do
-    Rhocrm::TestHelpers.load_templater(backend)
-    @app_generator = Rhocrm::TestHelpers.generate_sample_app('/tmp',{},appname,backend)
+    RhoconnectAdapters::CRM::TestHelpers.load_templater(backend)
+    @app_generator = RhoconnectAdapters::CRM::TestHelpers.generate_sample_app('/tmp',{},appname,backend)
     cmdline = "cd /tmp/#{appname}; rake rhoconnect:spec"
     res = system "#{cmdline}"
     res.should == true

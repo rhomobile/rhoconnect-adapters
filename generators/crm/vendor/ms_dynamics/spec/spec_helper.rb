@@ -48,7 +48,7 @@ shared_examples_for "SpecHelper" do
   include Rhoconnect::TestMethods
   
   def load_credentials(backend)
-    file = YAML.load_file(File.join(ROOT_PATH,'..','rhocrm-test',"#{Rhoconnect.under_score(backend)}.yml"))
+    file = YAML.load_file(File.join(ROOT_PATH,'..','rhoconnect-adapters-test',"#{Rhoconnect.under_score(backend)}.yml"))
     return file.nil? ? {} : file
   end
   
@@ -69,10 +69,10 @@ shared_examples_for "SpecHelper" do
     
   before(:each) do
     # preserving auth info 
-    auth_info = Rhocrm::MsDynamics.load_auth_info(@test_user)
+    auth_info = RhoconnectAdapters::CRM::MsDynamics.load_auth_info(@test_user)
     Store.db.flushdb
     Application.initializer(ROOT_PATH)
     # restoring auth info in the DB
-    Rhocrm::MsDynamics.save_auth_info(@test_user,auth_info) unless auth_info.nil?
+    RhoconnectAdapters::CRM::MsDynamics.save_auth_info(@test_user,auth_info) unless auth_info.nil?
   end
 end

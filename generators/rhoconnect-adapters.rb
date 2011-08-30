@@ -10,12 +10,12 @@ module RhoconnectAdapters
   extend Templater::Manifold
   extend RhoconnectAdapters
   
-  class NotSupportedBackendError < Templater::MalformattedArgumentError
-  end
-  
   desc <<-DESC
     Rhoconnect-adapters generator
   DESC
+  
+  class NotSupportedBackendError < Templater::MalformattedArgumentError
+  end
   
   class BaseGenerator < Templater::Generator
     def class_name
@@ -60,7 +60,7 @@ module RhoconnectAdapters
         puts "Requested CRM backend '#{name}' is not supported."
         puts ''
         puts 'List of supported backends:'
-        Rhocrm.registered_backends.each do |crm|
+        RhoconnectAdapters::CRM.registered_backends.each do |crm|
           puts "    - #{crm}"
         end
         puts ''
@@ -68,16 +68,18 @@ module RhoconnectAdapters
       end
     end
     
-    def self.configure_gemfile
+    def configure_gemfile
       super
       
       # also call vendor-defined method
       gem_file = File.join(@destination_root,"#{name}",'Gemfile')
       vendor_module = RhoconnectAdapters::CRM.const_get(crm_name.to_sym)
       vendor_dependencies = vendor_module.configure_gemfile
+      doc = ''
       vendor_dependencies.each do |key, val|
         doc += "gem '#{key}', '#{val}'\n"
       end
+      
       File.open(gem_file, 'a') {|f| f.write(doc) }
     end
     
@@ -103,11 +105,11 @@ module RhoconnectAdapters
       
       Required:
         name        - application name
-        CRM backend - supported CRM backend #{Rhocrm.registered_backends.inspect}
+        CRM backend - supported CRM backend #{RhoconnectAdapters::CRM.registered_backends.inspect}
     DESC
     
     first_argument :name, :required => true, :desc => "application name"
-    second_argument :crm, :required => true, :desc => "supported CRM backend #{RhoconnectAdapter::CRM.registered_backends.inspect}"
+    second_argument :crm, :required => true, :desc => "supported CRM backend #{RhoconnectAdapters::CRM.registered_backends.inspect}"
     #third_argument :__bare, :required => false, :desc => "generate CRM application without standard sources", :as => :boolean
     option :bare, :default => false, :desc => "generate CRM application without standard sources", :as => :boolean
     
@@ -123,7 +125,7 @@ module RhoconnectAdapters
     end
     template :spec_helper do |template|
       source_filename = File.join('..','..','vendor',underscore_crm,'spec','spec_helper.rb')
-      if File.exists? File.join(AppGenerator.source_root, source_filename)
+      if File.exists? File.join(CRMAppGenerator.source_root, source_filename)
         template.source = source_filename
       else
         template.source = File.join('..','spec','spec_helper.rb')
@@ -145,7 +147,7 @@ module RhoconnectAdapters
       # but only if --bare is not specified
       if not bare
         RhoconnectAdapters::CRM.standard_sources.each do |source|
-          RhoconnectAdapters.run_cli(File.join(destination_root,name), 'rhoconnect-adapters', Rhocrm::VERSION, ['crmsource', "#{source}", crm])
+          RhoconnectAdapters.run_cli(File.join(destination_root,name), 'rhoconnect-adapters', RhoconnectAdapters::VERSION, ['crmsource', "#{source}", crm])
         end
       end
     end
@@ -165,7 +167,7 @@ module RhoconnectAdapters
     DESC
 
     first_argument :name, :required => true, :desc => "source name"
-    second_argument :crm, :required => true, :desc => "supported CRM backend #{Rhocrm.registered_backends.inspect}"
+    second_argument :crm, :required => true, :desc => "supported CRM backend #{RhoconnectAdapters::CRM.registered_backends.inspect}"
     
     # to prevent re-loading on subsequent loads
     actions.clear
@@ -188,8 +190,8 @@ module RhoconnectAdapters
       end
     end
     template :source_spec do |template|
-      source_filename = File.join('..','crm','vendor',underscore_crm,'spec','sources',"#{underscore_name}_spec.rb")
-      if File.exists? File.join(SourceGenerator.source_root, source_filename)
+      source_filename = File.join('..','..','vendor',underscore_crm,'spec','sources',"#{underscore_name}_spec.rb")
+      if File.exists? File.join(CRMSourceGenerator.source_root, source_filename)
         template.source = source_filename
       else
         template.source = 'source_spec.rb'

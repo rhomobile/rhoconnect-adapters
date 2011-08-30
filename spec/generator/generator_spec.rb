@@ -15,33 +15,33 @@ describe "Generator" do
   describe "AppGenerator Command-line" do
     it "should complain if no name is specified" do
       lambda {
-        Rhocrm::AppGenerator.new('/tmp',{})
+        RhoconnectAdapters::CRMAppGenerator.new('/tmp',{})
       }.should raise_error(Templater::TooFewArgumentsError)
     end
     
     it "should complain if no CRM backend is specified" do
       lambda {
-        Rhocrm::AppGenerator.new('/tmp',{},appname)
+        RhoconnectAdapters::CRMAppGenerator.new('/tmp',{},appname)
       }.should raise_error(Templater::TooFewArgumentsError)
     end
     
     it "should complain if CRM backend is not valid" do
       lambda {
-        Rhocrm::AppGenerator.new('/tmp',{},appname,"foo")
-      }.should raise_error(Rhocrm::NotSupportedBackendError)
+        RhoconnectAdapters::CRMAppGenerator.new('/tmp',{},appname,"foo")
+      }.should raise_error(RhoconnectAdapters::NotSupportedBackendError)
     end
   end
      
-  Rhocrm.registered_backends.each do |backend|      
+  RhoconnectAdapters::CRM.registered_backends.each do |backend|      
     describe "Bare #{backend} App Generator" do
       before(:all) do
-        Rhocrm::TestHelpers.load_templater(backend)
-        @generator = Rhocrm::TestHelpers.generate_sample_app('/tmp',{:bare => true},appname,backend)
+        RhoconnectAdapters::CRM::TestHelpers.load_templater(backend)
+        @generator = RhoconnectAdapters::CRM::TestHelpers.generate_sample_app('/tmp',{:bare => true},appname,backend)
       end
         
       it "should not generate any sources with --bare option for #{backend}" do
         SecureRandom.should_receive(:hex).with(64).any_number_of_times
-        Rhocrm.standard_sources.each do |source|
+        RhoconnectAdapters::CRM.standard_sources.each do |source|
           source_name = Rhoconnect.under_score(source)
           @generator.should_not create("/tmp/#{appname}/sources/#{source}.rb")
         end
@@ -50,8 +50,8 @@ describe "Generator" do
        
     describe "Default #{backend} App Generator" do 
       before(:all) do
-        Rhocrm::TestHelpers.load_templater(backend)
-        @generator = Rhocrm::TestHelpers.generate_sample_app('/tmp',{},appname,backend)
+        RhoconnectAdapters::CRM::TestHelpers.load_templater(backend)
+        @generator = RhoconnectAdapters::CRM::TestHelpers.generate_sample_app('/tmp',{},appname,backend)
       end
         
       it "should create new #{backend} standard application files" do
@@ -66,9 +66,9 @@ describe "Generator" do
           end
       end
             
-      it "should generate standard #{Rhocrm.standard_sources.inspect} sources by default for #{backend}" do
+      it "should generate standard #{RhoconnectAdapters::CRM.standard_sources.inspect} sources by default for #{backend}" do
         SecureRandom.should_receive(:hex).with(64).any_number_of_times
-        Rhocrm.standard_sources.each do |source|
+        RhoconnectAdapters::CRM.standard_sources.each do |source|
           source_name = Rhoconnect.under_score(source)
           File.should be_exist("/tmp/#{appname}/sources/#{source_name}.rb")
         end
@@ -79,29 +79,29 @@ describe "Generator" do
   describe "SourceGenerator Command-Line" do
     it "should complain if no name is specified" do
       lambda {
-        Rhocrm::SourceGenerator.new('/tmp',{})
+        RhoconnectAdapters::CRMSourceGenerator.new('/tmp',{})
       }.should raise_error(Templater::TooFewArgumentsError)
     end
     
     it "should complain if no CRM backend is specified" do
       lambda {
-        Rhocrm::SourceGenerator.new('/tmp',{},source)
+        RhoconnectAdapters::CRMSourceGenerator.new('/tmp',{},source)
       }.should raise_error(Templater::TooFewArgumentsError)
     end
     
     it "should complain if CRM backend is not valid" do
       lambda {
-        Rhocrm::SourceGenerator.new('/tmp',{},source,"foo")
-      }.should raise_error(Rhocrm::NotSupportedBackendError)
+        RhoconnectAdapters::CRMSourceGenerator.new('/tmp',{},source,"foo")
+      }.should raise_error(RhoconnectAdapters::NotSupportedBackendError)
     end
   end
   
-  Rhocrm.registered_backends.each do |backend|     
+  RhoconnectAdapters::CRM.registered_backends.each do |backend|     
     describe "#{backend} Source Generator" do
       before(:each) do
-        Rhocrm::TestHelpers.load_templater(backend)
-        @app_generator = Rhocrm::TestHelpers.generate_sample_app('/tmp',{:bare => true},appname,backend)
-        @generator = Rhocrm::SourceGenerator.new("/tmp/#{appname}",{},source,backend)
+        RhoconnectAdapters::CRM::TestHelpers.load_templater(backend)
+        @app_generator = RhoconnectAdapters::CRM::TestHelpers.generate_sample_app('/tmp',{:bare => true},appname,backend)
+        @generator = RhoconnectAdapters::CRMSourceGenerator.new("/tmp/#{appname}",{},source,backend)
       end
         
       it "should create new source adapter and spec" do

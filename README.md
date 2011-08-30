@@ -1,28 +1,28 @@
-Rhocrm
+rhoconnect-adapters
 ===
 
-Rhocrm is a ruby library containing a collection of the out-of-box [RhoConnect](http://rhomobile.com/products/rhoconnect) applications 
-for various CRM backends.  
+rhoconnect-adapters is a ruby library containing a collection of the out-of-box [RhoConnect](http://rhomobile.com/products/rhoconnect) applications 
+for various needs.  
 
-With Rhocrm, you can utilize the pre-built set of [RhoConnect](http://rhomobile.com/products/rhoconnect/) applications 
+With rhoconnect-adapters, you can utilize the pre-built set of [RhoConnect](http://rhomobile.com/products/rhoconnect/) applications 
 for popular CRM backends (SalesForce, Oracle CRM On Demand, Sugar CRM, etc.). Also, this library includes support for writing your own [RhoConnect](http://rhomobile.com/products/rhoconnect/)
 CRM applications to extend or customize the default functionality.
 
 ## Setup
-Install the 'rhocrm' gem by using the following command:
+Install the 'rhoconnect-adapters' gem by using the following command:
 
-	$ [sudo] gem install rhocrm
+	$ [sudo] gem install rhoconnect-adapters
 
 
 ## Usage
-The 'rhocrm' command creates CRM-based [RhoConnect](http://rhomobile.com/products/rhoconnect/) applications.
+The 'rhoconnect-adapters' command creates pre-built [RhoConnect](http://rhomobile.com/products/rhoconnect/) applications.
 Visit the [RhoConnect](http://rhomobile.com/products/rhoconnect/) website for more information.
 
-### Generating Standard Application
+### Generating Standard CRM Application
 
-To create a standard out-of-the-box Rhocrm application use the following command:
+To create a standard out-of-the-box rhoconnect CRM application use the following command:
 
-	$ rhocrm app <app_name> <CRM-backend>
+	$ rhoconnect-adapters crmapp <app_name> <CRM-backend>
 
 Here, the \<CRM\-backend\> parameter specifies the CRM backend that your application will use.
 Currently, the following CRM backends are supported:
@@ -31,11 +31,11 @@ Currently, the following CRM backends are supported:
    - MsDynamics (for [Microsoft Dynamics CRM](http://www.microsoft.com/en-us/dynamics/default.aspx))
    - Sugar (for [Sugar CRM](http://http://www.sugarcrm.com/crm/))
 
-The generated Rhocrm application structure will include typical [RhoConnect](http://rhomobile.com/products/rhoconnect/)
+The generated Rhoconnect CRM application structure will include typical [RhoConnect](http://rhomobile.com/products/rhoconnect/)
 files (for example, application.rb and settings.yml). It will also create a special vendor directory `vendor/\<CRM\-backend\>`
 containing all support files specific for the corresponding CRM backend.
 
-By default, the Rhocrm application will be generated with four standard source adapters corresponding
+By default, the Rhoconnect CRM application will be generated with four standard source adapters corresponding
 to the following CRM objects:
 	
 	- Account
@@ -49,20 +49,20 @@ to the following CRM objects:
 In some cases, it is necessary to generate an application without any standard sources.
 For this purpose, use the `--bare` option to generate just the application's skeleton.
 
-	rhocrm app <app_name> <CRM-backend> --bare
+	rhoconnect-adapters crmapp <app_name> <CRM-backend> --bare
 	
 	
-### Generating CRM source adapters for the Rhocrm application
+### Generating CRM source adapters for the Rhoconnect CRM application
 
-Once you create your Rhocrm application, you can generate the desired source adapters
-based on the CRM objects by typing the following command in your Rhocrm application directory:
+Once you create your Rhoconnect CRM application, you can generate the desired source adapters
+based on the CRM objects by typing the following command in your application's directory:
 
-	rhocrm source <CRM-object-name> <CRM-backend>
+	rhoconnect-adapters crmsource <CRM-object-name> <CRM-backend>
 	
 Here, \<CRM\-object\-name\> must exactly correspond to the name of the CRM object you're trying to
 build the source adapter for.
 
-## Preparing the Rhocrm Application
+## Preparing the Rhoconnect CRM Application
 
 ### OracleOnDemand settings
 All OracleOnDemand-specific settings are located in the `vendor/oracle_on_demand/settings` directory.
@@ -188,8 +188,8 @@ options. For custom adapters, you need to fill this file with relevant informati
 from the SugarCRM documentation and then later used to fill the Query_Fields setting. Alternatively, user can customize the adapter and obtain 
 the desired list of object's fields using the SugarCRM REST API.
 
-## Running the Rhocrm Application
-Once your Rhocrm application is customized and ready to run, you can start it like any other Rhoconnect app.
+## Running the CRM Application
+Once your Rhoconnect application is customized and ready to run, you can start it like any other Rhoconnect app.
 Type the following command in the CRM application's root directory:
 
 	rake rhoconnect:start

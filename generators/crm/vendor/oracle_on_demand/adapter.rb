@@ -1,418 +1,420 @@
-require 'rhocrm'
-require 'rhocrm/soap_service'
+require 'rhoconnect-adapters'
+require 'rhoconnect-adapters/soap_service'
 require 'active_support/inflector'
 
-module Rhocrm
-  module OracleOnDemand
-    Rhocrm::SoapService.node_namespaces.merge!({'s'   => 'http://schemas.xmlsoap.org/soap/envelope/',
-                                                'plns' => 'urn:crmondemand/ws/picklist/',
-                                                'pldoc' => 'urn:/crmondemand/xml/picklist'});
-    Rhocrm::SoapService.envelope_namespaces += <<-DESC
-      xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\"
-    DESC
+module RhoconnectAdapters
+  module CRM
+    module OracleOnDemand
+      RhoconnectAdapters::SoapService.node_namespaces.merge!({'s'   => 'http://schemas.xmlsoap.org/soap/envelope/',
+                                                  'plns' => 'urn:crmondemand/ws/picklist/',
+                                                  'pldoc' => 'urn:/crmondemand/xml/picklist'});
+      RhoconnectAdapters::SoapService.envelope_namespaces += <<-DESC
+        xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      DESC
     
-    class Adapter < SourceAdapter
-      @picklist_namespaces = Rhocrm::SoapService.envelope_namespaces + "\nxmlns:wsdl=\"urn:crmondemand/ws/picklist/\""
-      attr_accessor :crm_object
-      attr_accessor :crm_object_namespaces
-      attr_accessor :fields
+      class Adapter < SourceAdapter
+        @picklist_namespaces = RhoconnectAdapters::SoapService.envelope_namespaces + "\nxmlns:wsdl=\"urn:crmondemand/ws/picklist/\""
+        attr_accessor :crm_object
+        attr_accessor :crm_object_namespaces
+        attr_accessor :fields
       
-      class << self
-        attr_accessor :picklist_namespaces
+        class << self
+          attr_accessor :picklist_namespaces
         
-        def get_columns(fields)
-          columns = ""
-          fields.each do |key,val|
-            columns += "<wsdl:#{key}></wsdl:#{key}>"
-          end
-          columns
-        end
-        
-        def get_columns_values(fields)
-          columns = ""
-          fields.each do |key,val|
-            if not val
-              next
+          def get_columns(fields)
+            columns = ""
+            fields.each do |key,val|
+              columns += "<wsdl:#{key}></wsdl:#{key}>"
             end
-            columns += "<wsdl:#{key}>#{val}</wsdl:#{key}>"
+            columns
           end
-          columns
+        
+          def get_columns_values(fields)
+            columns = ""
+            fields.each do |key,val|
+              if not val
+                next
+              end
+              columns += "<wsdl:#{key}>#{val}</wsdl:#{key}>"
+            end
+            columns
+          end
         end
-      end
                         
-      def initialize(source)
-        super(source)
-        @fields = {}   
-        @crm_object = self.class.name
-        @title_fields = ['Id']
-      end
-      
-      def configure_fields
-        # this is going to be used in XPath searches
-        Rhocrm::SoapService.node_namespaces.merge!({"#{crm_object}doc" => "urn:/crmondemand/xml/#{crm_object}/Data"});
-        
-        # this is going to be passed in SOAP requests
-        @crm_object_namespaces = Rhocrm::SoapService.envelope_namespaces
-        @crm_object_namespaces += "\nxmlns:wsdl=\"urn:crmondemand/ws/ecbs/#{crm_object.downcase}/\""
-        
-        # initialize fields map
-        @fields = get_object_settings['Query_Fields']
-    
-        @field_picklists = {}
-        static_picklists = get_object_settings['StaticPicklist']
-        if static_picklists != nil
-          static_picklists.each do |element_name, values|
-            @field_picklists[element_name] = values
-          end
+        def initialize(source)
+          super(source)
+          @fields = {}   
+          @crm_object = self.class.name
+          @title_fields = ['Id']
         end
-    
-        @object_fields = get_object_settings['ObjectFields']
-        @object_fields = {} if @object_fields == nil
-        
-        # title fields are used in metadata to show 
-        # records in the list
-        @title_fields = get_object_settings['TitleFields']
-        
-        @fields
-      end
-
-      def get_object_settings
-        return @object_settings if @object_settings
-        begin
-          @object_settings = Rhocrm::Field.load_file(File.join(ROOT_PATH,'vendor','oracle_on_demand','settings',"#{crm_object}.yml"))
-        rescue Exception => e
-          puts "Error opening CRMObjects settings file: #{e}"
-          puts e.backtrace.join("\n")
-          raise e
-        end
-      end
-
-      def get_picklists
-        begin  
-          nonquery_fields = get_object_settings['NonQuery_MappingWS_Fields']
-          fields.each do |element_name, element_def|
-            # use object field only of it has not been excluded
-            # explicitly in the object's settings
-            next if nonquery_fields.has_key? element_name
       
-            data_type = element_def['Type']
-            # for picklists - get values
-            # but only for those that are not 
-            # already defined statically
-            if data_type == 'Picklist' and not @field_picklists.has_key?(element_name)
-              @field_picklists[element_name] = get_picklist(element_name)
+        def configure_fields
+          # this is going to be used in XPath searches
+          RhoconnectAdapters::SoapService.node_namespaces.merge!({"#{crm_object}doc" => "urn:/crmondemand/xml/#{crm_object}/Data"});
+        
+          # this is going to be passed in SOAP requests
+          @crm_object_namespaces = RhoconnectAdapters::SoapService.envelope_namespaces
+          @crm_object_namespaces += "\nxmlns:wsdl=\"urn:crmondemand/ws/ecbs/#{crm_object.downcase}/\""
+        
+          # initialize fields map
+          @fields = get_object_settings['Query_Fields']
+    
+          @field_picklists = {}
+          static_picklists = get_object_settings['StaticPicklist']
+          if static_picklists != nil
+            static_picklists.each do |element_name, values|
+              @field_picklists[element_name] = values
             end
-          end    
-        rescue RestClient::Exception => e
-          raise e
-        end
-      end
- 
-      def get_picklist(element_name)
-        # check if we already have it in Store
-        picklist = Store.get_data("#{crm_object}:#{element_name}_picklist",Array)
-        return picklist if picklist.size != 0
-        
-        password = Store.get_value("#{current_user.login}:password")
-        wsse = Rhocrm::SoapService.compose_wsse_header(current_user.login, password)
-        body = "<wsdl:PicklistWS_GetPicklistValues_Input>
-                   <wsdl:RecordType>#{crm_object}</wsdl:RecordType>
-                   <wsdl:FieldName>#{element_name}</wsdl:FieldName>
-                 </wsdl:PicklistWS_GetPicklistValues_Input>"
-        req = Rhocrm::SoapService.compose_message(wsse, body, Adapter.picklist_namespaces)
-        
-        field_values = []
-        response = nil
-        begin
-          response = Rhocrm::SoapService.send_request_raw("#{@endpoint_url}/GetPicklistValues",
-                                              req, 
-                                              "\"document/urn:crmondemand/ws/picklist/:GetPicklistValues\"",
-                                              @session_cookie);
-          
-          oracle_rec = Rhocrm::SoapService.select_node(Nokogiri::XML(response), '//pldoc:PicklistValue')
-          oracle_rec.each do |pval|
-            disabled = Rhocrm::SoapService.select_node_text(pval, 'pldoc:Disabled')
-            field_values << Rhocrm::SoapService.select_node_text(pval, 'pldoc:DisplayValue') if not disabled == 'Y'
           end
     
-        rescue RestClient::Exception => e
-          raise e
+          @object_fields = get_object_settings['ObjectFields']
+          @object_fields = {} if @object_fields == nil
+        
+          # title fields are used in metadata to show 
+          # records in the list
+          @title_fields = get_object_settings['TitleFields']
+        
+          @fields
         end
-        # server stateless session id is returned with the response
-        @session_cookie = response.cookies
-        Store.put_data("#{crm_object}:#{element_name}_picklist", field_values)
-        field_values
-      end
+
+        def get_object_settings
+          return @object_settings if @object_settings
+          begin
+            @object_settings = RhoconnectAdapters::CRM::Field.load_file(File.join(ROOT_PATH,'vendor','oracle_on_demand','settings',"#{crm_object}.yml"))
+          rescue Exception => e
+            puts "Error opening CRMObjects settings file: #{e}"
+            puts e.backtrace.join("\n")
+            raise e
+          end
+        end
+
+        def get_picklists
+          begin  
+            nonquery_fields = get_object_settings['NonQuery_MappingWS_Fields']
+            fields.each do |element_name, element_def|
+              # use object field only of it has not been excluded
+              # explicitly in the object's settings
+              next if nonquery_fields.has_key? element_name
+      
+              data_type = element_def['Type']
+              # for picklists - get values
+              # but only for those that are not 
+              # already defined statically
+              if data_type == 'Picklist' and not @field_picklists.has_key?(element_name)
+                @field_picklists[element_name] = get_picklist(element_name)
+              end
+            end    
+          rescue RestClient::Exception => e
+            raise e
+          end
+        end
  
-      def login
-        @endpoint_url = Store.get_value("#{current_user.login}:service_url")
+        def get_picklist(element_name)
+          # check if we already have it in Store
+          picklist = Store.get_data("#{crm_object}:#{element_name}_picklist",Array)
+          return picklist if picklist.size != 0
+        
+          password = Store.get_value("#{current_user.login}:password")
+          wsse = RhoconnectAdapters::SoapService.compose_wsse_header(current_user.login, password)
+          body = "<wsdl:PicklistWS_GetPicklistValues_Input>
+                     <wsdl:RecordType>#{crm_object}</wsdl:RecordType>
+                     <wsdl:FieldName>#{element_name}</wsdl:FieldName>
+                   </wsdl:PicklistWS_GetPicklistValues_Input>"
+          req = RhoconnectAdapters::SoapService.compose_message(wsse, body, Adapter.picklist_namespaces)
+        
+          field_values = []
+          response = nil
+          begin
+            response = RhoconnectAdapters::SoapService.send_request_raw("#{@endpoint_url}/GetPicklistValues",
+                                                req, 
+                                                "\"document/urn:crmondemand/ws/picklist/:GetPicklistValues\"",
+                                                @session_cookie);
+          
+            oracle_rec = RhoconnectAdapters::SoapService.select_node(Nokogiri::XML(response), '//pldoc:PicklistValue')
+            oracle_rec.each do |pval|
+              disabled = RhoconnectAdapters::SoapService.select_node_text(pval, 'pldoc:Disabled')
+              field_values << RhoconnectAdapters::SoapService.select_node_text(pval, 'pldoc:DisplayValue') if not disabled == 'Y'
+            end
     
-        # get types information from the GetPicklistValues WS
-        get_picklists
-      end
-
-      def execute_soap_action(action, soap_body)
-        action_prefix = "#{crm_object}" + action
-        soapaction = "\"document/urn:crmondemand/ws/ecbs/#{crm_object.downcase}/:"
-        soapaction += action_prefix + '"'
-        
-        password = Store.get_value("#{current_user.login}:password")
-        wsse = Rhocrm::SoapService.compose_wsse_header(current_user.login, password)
-        body = "<wsdl:#{crm_object}#{action}_Input>
-                #{soap_body}
-              </wsdl:#{crm_object}#{action}_Input>"
-        req = Rhocrm::SoapService.compose_message(wsse, body, crm_object_namespaces)
-        
-        response = nil
-        begin
-          response = Rhocrm::SoapService.send_request_raw("#{@endpoint_url}/#{crm_object}",
-                                              req, 
-                                              soapaction,
-                                              @session_cookie);
-        rescue RestClient::Exception => e
-          raise e
+          rescue RestClient::Exception => e
+            raise e
+          end
+          # server stateless session id is returned with the response
+          @session_cookie = response.cookies
+          Store.put_data("#{crm_object}:#{element_name}_picklist", field_values)
+          field_values
         end
-        # server stateless session id is returned with the response
-        @session_cookie = response.cookies
+ 
+        def login
+          @endpoint_url = Store.get_value("#{current_user.login}:service_url")
+    
+          # get types information from the GetPicklistValues WS
+          get_picklists
+        end
+
+        def execute_soap_action(action, soap_body)
+          action_prefix = "#{crm_object}" + action
+          soapaction = "\"document/urn:crmondemand/ws/ecbs/#{crm_object.downcase}/:"
+          soapaction += action_prefix + '"'
         
-        Rhocrm::SoapService.select_node(Nokogiri::XML(response), "//#{crm_object}doc:ListOf#{crm_object}")[0]
-      end  
+          password = Store.get_value("#{current_user.login}:password")
+          wsse = RhoconnectAdapters::SoapService.compose_wsse_header(current_user.login, password)
+          body = "<wsdl:#{crm_object}#{action}_Input>
+                  #{soap_body}
+                </wsdl:#{crm_object}#{action}_Input>"
+          req = RhoconnectAdapters::SoapService.compose_message(wsse, body, crm_object_namespaces)
+        
+          response = nil
+          begin
+            response = RhoconnectAdapters::SoapService.send_request_raw("#{@endpoint_url}/#{crm_object}",
+                                                req, 
+                                                soapaction,
+                                                @session_cookie);
+          rescue RestClient::Exception => e
+            raise e
+          end
+          # server stateless session id is returned with the response
+          @session_cookie = response.cookies
+        
+          RhoconnectAdapters::SoapService.select_node(Nokogiri::XML(response), "//#{crm_object}doc:ListOf#{crm_object}")[0]
+        end  
 
-      def query(params=nil)
-        # TODO: Query your backend data source and assign the records 
-        # to a nested hash structure called @result. For example:
-        # @result = { 
-        #   "1"=>{"name"=>"Acme", "industry"=>"Electronics"},
-        #   "2"=>{"name"=>"Best", "industry"=>"Software"}
-        # }
-        @result = {}
-        fetch_more = 'true'
-        start_row = 0
-        begin 
+        def query(params=nil)
+          # TODO: Query your backend data source and assign the records 
+          # to a nested hash structure called @result. For example:
+          # @result = { 
+          #   "1"=>{"name"=>"Acme", "industry"=>"Electronics"},
+          #   "2"=>{"name"=>"Best", "industry"=>"Software"}
+          # }
+          @result = {}
+          fetch_more = 'true'
+          start_row = 0
+          begin 
           
-          soap_body = "<wsdl:ListOf#{crm_object} recordcountneeded=\"true\" pagesize=\"100\" startrownum=\"#{start_row.to_s}\">
-            <wsdl:#{crm_object} searchspec=\"\">
-              #{Adapter.get_columns(fields)}
-            </wsdl:#{crm_object}>
-          </wsdl:ListOf#{crm_object}>"
+            soap_body = "<wsdl:ListOf#{crm_object} recordcountneeded=\"true\" pagesize=\"100\" startrownum=\"#{start_row.to_s}\">
+              <wsdl:#{crm_object} searchspec=\"\">
+                #{Adapter.get_columns(fields)}
+              </wsdl:#{crm_object}>
+            </wsdl:ListOf#{crm_object}>"
 
-          query_results = execute_soap_action('QueryPage', soap_body)
-          fetch_more = query_results['lastpage'] == 'true' ? false : true;
+            query_results = execute_soap_action('QueryPage', soap_body)
+            fetch_more = query_results['lastpage'] == 'true' ? false : true;
           
-          query_results.children.each do |record|
-            if record.name == "#{crm_object}"
-               id_field = Rhocrm::SoapService.select_node_text(record, "#{crm_object}doc:Id")
-               converted_record = {}
-               # grab only the allowed fields 
-               fields.each do |element_name,element_def|
-                 converted_record[element_name] = Rhocrm::SoapService.select_node_text(record, "#{crm_object}doc:#{element_name}")
+            query_results.children.each do |record|
+              if record.name == "#{crm_object}"
+                 id_field = RhoconnectAdapters::SoapService.select_node_text(record, "#{crm_object}doc:Id")
+                 converted_record = {}
+                 # grab only the allowed fields 
+                 fields.each do |element_name,element_def|
+                   converted_record[element_name] = RhoconnectAdapters::SoapService.select_node_text(record, "#{crm_object}doc:#{element_name}")
+                 end
+                 @result[id_field] = converted_record
                end
-               @result[id_field] = converted_record
              end
-           end
-           start_row = @result.size
-         end while fetch_more
-         @result
-       end
+             start_row = @result.size
+           end while fetch_more
+           @result
+         end
           
-      def sync
-        # Manipulate @result before it is saved, or save it 
-        # yourself using the Rhoconnect::Store interface.
-        # By default, super is called below which simply saves @result
-        super
-      end
+        def sync
+          # Manipulate @result before it is saved, or save it 
+          # yourself using the Rhoconnect::Store interface.
+          # By default, super is called below which simply saves @result
+          super
+        end
   
-      def metadata
-        # define the metadata
-        show_fields = []
-        new_fields = []
-        edit_fields = []
-        model_name = "" + crm_object
-        model_name[0] = model_name[0,1].downcase
-        record_sym = '@' + "#{model_name}"
+        def metadata
+          # define the metadata
+          show_fields = []
+          new_fields = []
+          edit_fields = []
+          model_name = "" + crm_object
+          model_name[0] = model_name[0,1].downcase
+          record_sym = '@' + "#{model_name}"
       
-        fields.each do |element_name,element_def|
-          next if element_name == 'Id'
+          fields.each do |element_name,element_def|
+            next if element_name == 'Id'
       
-          # 1) - read-only show fields
-          field_type = 'labeledvalueli'
-          field = {
-            :name => "#{model_name}\[#{element_name}\]",
-            :label => element_def['Label'],
-            :type => field_type,
-            :value => "{{#{record_sym}/#{element_name}}}"
-          }
-          show_fields << field
+            # 1) - read-only show fields
+            field_type = 'labeledvalueli'
+            field = {
+              :name => "#{model_name}\[#{element_name}\]",
+              :label => element_def['Label'],
+              :type => field_type,
+              :value => "{{#{record_sym}/#{element_name}}}"
+            }
+            show_fields << field
       
-          new_field = field.clone
-          new_field[:type] = 'labeledinputli'
-          new_field.delete(:value) 
-          case element_def['Type']
-          when 'Picklist'
-            new_field[:type] = 'select'
-            values = []
-            # make first element a blanc value
-            values[0] = nil
-            values.concat @field_picklists[element_name]
-            new_field[:values] = values
-            new_field[:value] = values[0]
-          when 'object'
-          end
+            new_field = field.clone
+            new_field[:type] = 'labeledinputli'
+            new_field.delete(:value) 
+            case element_def['Type']
+            when 'Picklist'
+              new_field[:type] = 'select'
+              values = []
+              # make first element a blanc value
+              values[0] = nil
+              values.concat @field_picklists[element_name]
+              new_field[:values] = values
+              new_field[:value] = values[0]
+            when 'object'
+            end
              
-          new_fields << new_field if not element_def['Type'] == 'object'
+            new_fields << new_field if not element_def['Type'] == 'object'
       
-          edit_field = new_field.clone
-          edit_field[:value] = "{{#{record_sym}/#{element_name}}}"
-          edit_fields << edit_field
-        end
-    
-        # Show
-        show_list = { :name => 'list', :type => 'list', :children => show_fields }
-        show_form = { 
-          :name => "#{crm_object}_show",
-          :type => 'show_form',
-          :title => "#{crm_object} details",
-          :object => "#{crm_object}",
-          :model => "#{model_name}",
-          :id => "{{#{record_sym}/object}}",
-          :children => [show_list]
-        }
-    
-        # New
-        new_list = show_list.clone
-        new_list[:children] = new_fields
-        new_form = {
-          :type => 'new_form',
-          :title => "New #{crm_object}",
-          :object => "#{crm_object}",
-          :model => "#{model_name}",
-          :children => [new_list]
-        }
-    
-        # Edit
-        edit_list = show_list.clone
-        edit_list[:children] = edit_fields
-        edit_form = { 
-          :type => 'update_form',
-          :title => "Edit #{crm_object}",
-          :object => "#{crm_object}",
-          :model => "#{model_name}",
-          :id => "{{#{record_sym}/object}}",
-          :children => [edit_list]
-        }
-        
-        # Index
-        title_field_metadata = @title_fields.collect { |field_name | "{{#{field_name.to_s}}} " }.join(' ')
-        object_rec = {
-          :object => "#{crm_object}",
-          :id => "{{object}}",
-          :type => 'linkobj', 
-          :text => "#{title_field_metadata}" 
-        }
-
-        index_form = {
-          :object => "#{crm_object}",
-          :title => "#{crm_object.pluralize}",
-          :type => 'index_form',
-          :children => [object_rec],
-          :repeatable => "{{#{record_sym.pluralize}}}"
-        }
-
-        # return JSON
-        { 'index' => index_form, 'show' => show_form, 'new' => new_form, 'edit' => edit_form }.to_json
-      end
- 
-      def create(create_hash,blob=nil)
-        # TODO: Create a new record in your backend data source
-        # If your rhodes rhom object contains image/binary data 
-        # (has the image_uri attribute), then a blob will be provided
-        created_object_id = nil
-        request_fields = {}
-        fields.each do |element_name, element_def|
-          field_value = create_hash[element_name]
-          if field_value != nil and element_name != 'Id'
-            request_fields[element_name] = field_value
+            edit_field = new_field.clone
+            edit_field[:value] = "{{#{record_sym}/#{element_name}}}"
+            edit_fields << edit_field
           end
-        end
+    
+          # Show
+          show_list = { :name => 'list', :type => 'list', :children => show_fields }
+          show_form = { 
+            :name => "#{crm_object}_show",
+            :type => 'show_form',
+            :title => "#{crm_object} details",
+            :object => "#{crm_object}",
+            :model => "#{model_name}",
+            :id => "{{#{record_sym}/object}}",
+            :children => [show_list]
+          }
+    
+          # New
+          new_list = show_list.clone
+          new_list[:children] = new_fields
+          new_form = {
+            :type => 'new_form',
+            :title => "New #{crm_object}",
+            :object => "#{crm_object}",
+            :model => "#{model_name}",
+            :children => [new_list]
+          }
+    
+          # Edit
+          edit_list = show_list.clone
+          edit_list[:children] = edit_fields
+          edit_form = { 
+            :type => 'update_form',
+            :title => "Edit #{crm_object}",
+            :object => "#{crm_object}",
+            :model => "#{model_name}",
+            :id => "{{#{record_sym}/object}}",
+            :children => [edit_list]
+          }
         
-        soap_body = "<wsdl:ListOf#{crm_object}>
-            <wsdl:#{crm_object}>
-              #{Adapter.get_columns_values(request_fields)}
-            </wsdl:#{crm_object}>
-          </wsdl:ListOf#{crm_object}>"
+          # Index
+          title_field_metadata = @title_fields.collect { |field_name | "{{#{field_name.to_s}}} " }.join(' ')
+          object_rec = {
+            :object => "#{crm_object}",
+            :id => "{{object}}",
+            :type => 'linkobj', 
+            :text => "#{title_field_metadata}" 
+          }
 
-        begin 
-          oracle_rec = execute_soap_action('Insert', soap_body)
-          created_object_id = Rhocrm::SoapService.select_node_text(oracle_rec, "//#{crm_object}doc:Id").to_s
-        rescue RestClient::Exception => e
-          raise e
+          index_form = {
+            :object => "#{crm_object}",
+            :title => "#{crm_object.pluralize}",
+            :type => 'index_form',
+            :children => [object_rec],
+            :repeatable => "{{#{record_sym.pluralize}}}"
+          }
+
+          # return JSON
+          { 'index' => index_form, 'show' => show_form, 'new' => new_form, 'edit' => edit_form }.to_json
         end
-        
-        # return new object ids
-        created_object_id
-      end
  
-      def update(update_hash)
-        updated_object_id = nil
-        request_fields = {}
-        fields.each do |element_name,element_def|
-          field_value = update_hash[element_name]
-          if field_value != nil
-            request_fields[element_name] = field_value
+        def create(create_hash,blob=nil)
+          # TODO: Create a new record in your backend data source
+          # If your rhodes rhom object contains image/binary data 
+          # (has the image_uri attribute), then a blob will be provided
+          created_object_id = nil
+          request_fields = {}
+          fields.each do |element_name, element_def|
+            field_value = create_hash[element_name]
+            if field_value != nil and element_name != 'Id'
+              request_fields[element_name] = field_value
+            end
           end
-        end
-        # check if 'Id' is present
-        # it may be available as an 'id'
-        if request_fields['Id'] == nil
-          request_fields['Id'] = update_hash['id']
-        end
         
-        if request_fields['Id'] == nil
-          raise SourceAdapterObjectConflictError.new("'Id' field must be specified for the Update request")
-        end
-        
-        soap_body = "<wsdl:ListOf#{crm_object}>
-            <wsdl:#{crm_object}>
-              #{Adapter.get_columns_values(request_fields)}
-            </wsdl:#{crm_object}>
-          </wsdl:ListOf#{crm_object}>"
+          soap_body = "<wsdl:ListOf#{crm_object}>
+              <wsdl:#{crm_object}>
+                #{Adapter.get_columns_values(request_fields)}
+              </wsdl:#{crm_object}>
+            </wsdl:ListOf#{crm_object}>"
 
-        begin 
-          oracle_rec = execute_soap_action('Update', soap_body)
-          updated_object_id = Rhocrm::SoapService.select_node_text(oracle_rec, "#{crm_object}doc:Id")
-        rescue RestClient::Exception => e
-          raise e
+          begin 
+            oracle_rec = execute_soap_action('Insert', soap_body)
+            created_object_id = RhoconnectAdapters::SoapService.select_node_text(oracle_rec, "//#{crm_object}doc:Id").to_s
+          rescue RestClient::Exception => e
+            raise e
+          end
+        
+          # return new object ids
+          created_object_id
         end
-        updated_object_id
-      end
  
-      def delete(delete_hash)
-        deleted_object_id = delete_hash['Id'] || delete_hash['id']
+        def update(update_hash)
+          updated_object_id = nil
+          request_fields = {}
+          fields.each do |element_name,element_def|
+            field_value = update_hash[element_name]
+            if field_value != nil
+              request_fields[element_name] = field_value
+            end
+          end
+          # check if 'Id' is present
+          # it may be available as an 'id'
+          if request_fields['Id'] == nil
+            request_fields['Id'] = update_hash['id']
+          end
         
-        if deleted_object_id == nil
-          raise SourceAdapterObjectConflictError.new("'Id' field must be specified for the Delete request")
-        end
+          if request_fields['Id'] == nil
+            raise SourceAdapterObjectConflictError.new("'Id' field must be specified for the Update request")
+          end
         
-        request_fields = {}
-        request_fields['Id'] = deleted_object_id
-        
-        soap_body = "<wsdl:ListOf#{crm_object}>
-            <wsdl:#{crm_object}>
-              #{Adapter.get_columns_values(request_fields)}
-            </wsdl:#{crm_object}>
-          </wsdl:ListOf#{crm_object}>"
+          soap_body = "<wsdl:ListOf#{crm_object}>
+              <wsdl:#{crm_object}>
+                #{Adapter.get_columns_values(request_fields)}
+              </wsdl:#{crm_object}>
+            </wsdl:ListOf#{crm_object}>"
 
-        begin 
-          execute_soap_action('Delete', soap_body)
-        rescue RestClient::Exception => e
-          raise e
+          begin 
+            oracle_rec = execute_soap_action('Update', soap_body)
+            updated_object_id = RhoconnectAdapters::SoapService.select_node_text(oracle_rec, "#{crm_object}doc:Id")
+          rescue RestClient::Exception => e
+            raise e
+          end
+          updated_object_id
         end
-        
-        deleted_object_id
-      end
  
-      def logoff
-        # logoff if necessary
+        def delete(delete_hash)
+          deleted_object_id = delete_hash['Id'] || delete_hash['id']
+        
+          if deleted_object_id == nil
+            raise SourceAdapterObjectConflictError.new("'Id' field must be specified for the Delete request")
+          end
+        
+          request_fields = {}
+          request_fields['Id'] = deleted_object_id
+        
+          soap_body = "<wsdl:ListOf#{crm_object}>
+              <wsdl:#{crm_object}>
+                #{Adapter.get_columns_values(request_fields)}
+              </wsdl:#{crm_object}>
+            </wsdl:ListOf#{crm_object}>"
+
+          begin 
+            execute_soap_action('Delete', soap_body)
+          rescue RestClient::Exception => e
+            raise e
+          end
+        
+          deleted_object_id
+        end
+ 
+        def logoff
+          # logoff if necessary
+        end
       end
     end
   end

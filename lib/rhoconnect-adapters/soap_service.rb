@@ -1,7 +1,7 @@
 require 'rest-client'
 require 'nokogiri'
 
-module Rhocrm
+module RhoconnectAdapters
   class SoapService
     @node_namespaces = {
         'wsu' => 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd',
@@ -20,7 +20,7 @@ module Rhocrm
       attr_accessor :node_namespaces
       # use envelope namespaces to be passed with the SOAP request
       attr_accessor :envelope_namespaces
-         
+       
       def select_node(doc,node_name)
         doc.xpath("#{node_name}",SoapService.node_namespaces)
       end
@@ -38,7 +38,7 @@ module Rhocrm
         </wsse:Security>"
       end
 
-      def compose_message(header,body,namespaces=Rhocrm::SoapService.envelope_namespaces)
+      def compose_message(header,body,namespaces=RhoconnectAdapters::SoapService.envelope_namespaces)
         hdr = header ? "<s:Header>#{header}</s:Header>" : ""
         bdy = body ? "<s:Body>#{body}</s:Body>" : ""
         "<?xml version=\"1.0\"?>
@@ -47,12 +47,12 @@ module Rhocrm
            #{bdy}
          </s:Envelope>"        
       end
-      
+    
       def send_request(endpoint,message,action=nil,content_type='text/xml; charset=UTF-8',cookie=nil)
         response = send_request_raw(endpoint, message, action, content_type, cookie)
         Nokogiri::XML(response)
       end
-      
+    
       def send_request_raw(endpoint,message,action=nil,content_type='text/xml; charset=UTF-8',cookie=nil)
         begin
           headers = { :content_type => content_type }

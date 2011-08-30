@@ -1,12 +1,12 @@
 Query_Fields:
     # This is just a sample list of fields 
     # that are used in query
-    Id:
-        Label: Id
-        Type: id
+    name:
+        Label: Name
+        Type: textinput
   
 ObjectFields:
     # these are reference fields to the other objects
 
 TitleFields:
-    - Id
+    - name
