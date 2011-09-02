@@ -1,11 +1,10 @@
 Opportunity:
     Name: Biggest Opp of the Year
     StageName: Value Proposition
-#    Amount: 50000
-#    Probability: 99
-#    ExpectedRevenue: 25000
-    CloseDate: 12/24/2011
-#    Type: New Customer
-#    NextStep: Counteroffer
-#    LeadSource: Web
-#    Description: Very good opportunity
+    Amount: 50000
+    Probability: 99
+    CloseDate: 2011-12-24
+    Type: New Customer
+    NextStep: Counteroffer
+    LeadSource: Web
+    Description: Very good opportunity

@@ -20,12 +20,9 @@ Query_Fields:
     Probability:
         Label: Probability
         Type: textarea
-    ExpectedRevenue:
-        Label: ExpectedRevenue
-        Type: textinput
     CloseDate:
         Label: Close Date
-        Type: textinput
+        Type: datetime
     Type:
         Label: Opportunity Type
         Type: Picklist

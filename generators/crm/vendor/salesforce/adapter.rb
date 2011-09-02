@@ -52,13 +52,13 @@ module RhoconnectAdapters
             parsed["fields"].each do |field|
               element_name = field['name']
               
-              puts " we have field #{element_name}"
-              puts " picklist values are : #{field["picklistValues"].inspect}"
+              #puts " we have field #{element_name}"
+              #puts " picklist values are : #{field["picklistValues"].inspect}"
               
               next unless fields[element_name] != nil
               data_type = fields[element_name]['Type']
               if data_type == 'Picklist' and not @field_picklists.has_key?(element_name)
-                get_picklist(element_name, field)
+                @field_picklists[element_name] = get_picklist(element_name, field)
               end
             end
             Store.put_value("#{crm_object}:already_described", true)    
@@ -133,8 +133,105 @@ module RhoconnectAdapters
         end
       
         def metadata
-          
+          # define the metadata
+          show_fields = []
+          new_fields = []
+          edit_fields = []
+          model_name = "" + crm_object
+          model_name[0] = model_name[0,1].downcase
+          record_sym = '@' + "#{model_name}"
+      
+          fields.each do |element_name,element_def|
+            next if element_name == 'Id'
+      
+            # 1) - read-only show fields
+            field_type = 'labeledvalueli'
+            field = {
+              :name => "#{model_name}\[#{element_name}\]",
+              :label => element_def['Label'],
+              :type => field_type,
+              :value => "{{#{record_sym}/#{element_name}}}"
+            }
+            show_fields << field
+      
+            new_field = field.clone
+            new_field[:type] = 'labeledinputli'
+            new_field.delete(:value) 
+            case element_def['Type']
+            when 'Picklist'
+              new_field[:type] = 'select'
+              values = []
+              # make first element a blank value
+              values[0] = nil
+              values.concat @field_picklists[element_name]
+              new_field[:values] = values
+              new_field[:value] = values[0]
+            when 'object'
+            end
+             
+            new_fields << new_field if not element_def['Type'] == 'object'
+      
+            edit_field = new_field.clone
+            edit_field[:value] = "{{#{record_sym}/#{element_name}}}"
+            edit_fields << edit_field
+          end
+    
+          # Show
+          show_list = { :name => 'list', :type => 'list', :children => show_fields }
+          show_form = { 
+            :name => "#{crm_object}_show",
+            :type => 'show_form',
+            :title => "#{crm_object} details",
+            :object => "#{crm_object}",
+            :model => "#{model_name}",
+            :id => "{{#{record_sym}/object}}",
+            :children => [show_list]
+          }
+    
+          # New
+          new_list = show_list.clone
+          new_list[:children] = new_fields
+          new_form = {
+            :type => 'new_form',
+            :title => "New #{crm_object}",
+            :object => "#{crm_object}",
+            :model => "#{model_name}",
+            :children => [new_list]
+          }
+    
+          # Edit
+          edit_list = show_list.clone
+          edit_list[:children] = edit_fields
+          edit_form = { 
+            :type => 'update_form',
+            :title => "Edit #{crm_object}",
+            :object => "#{crm_object}",
+            :model => "#{model_name}",
+            :id => "{{#{record_sym}/object}}",
+            :children => [edit_list]
+          }
+        
+          # Index
+          title_field_metadata = @title_fields.collect { |field_name | "{{#{field_name.to_s}}} " }.join(' ')
+          object_rec = {
+            :object => "#{crm_object}",
+            :id => "{{object}}",
+            :type => 'linkobj', 
+            :text => "#{title_field_metadata}" 
+          }
+
+          index_form = {
+            :object => "#{crm_object}",
+            :title => "#{crm_object.pluralize}",
+            :type => 'index_form',
+            :children => [object_rec],
+            :repeatable => "{{#{record_sym.pluralize}}}"
+          }
+
+          # return JSON
+          { 'index' => index_form, 'show' => show_form, 'new' => new_form, 'edit' => edit_form }.to_json  
         end
+        
         def create(create_hash,blob=nil)
           # TODO: Create a new record in your backend data source
           # If your rhodes rhom object contains image/binary data 
@@ -144,16 +241,31 @@ module RhoconnectAdapters
           field_types = {}
           fields.each do |element_name, element_def|
             field_value = create_hash[element_name]
-          
-            if field_value != nil and element_name != "Id"
-              request_fields[element_name] = field_value
-            end
+            next unless (element_name != "Id" and field_value != nil)
+            
+            # special case for Datetime types - they need to 
+            # be converted to W3C XML trailing Z
+            if element_def['Type'] == 'datetime'
+              field_value = Date.parse(field_value).strftime '%Y-%m-%dT%H:%M:%S.000Z'
+            end  
+            request_fields[element_name] = field_value
           end
-        
-          requesturl = "#{@resturl}/sobjects/#{crm_object}/"
-
-          parsed = JSON.parse(RestClient.post(requesturl, request_fields.to_json, @postheaders))
-          created_object_id = parsed['id']
+          
+          begin 
+            requesturl = "#{@resturl}/sobjects/#{crm_object}/"
+            raw_data = RestClient.post(requesturl, request_fields.to_json, @postheaders) do |response,request, result, &block| 
+              case response.code 
+              when 400
+                raise response.body
+              end
+              response.body
+            end
+            parsed = JSON.parse raw_data
+            created_object_id = parsed['id']
+          rescue Exception => e
+            raise e
+          end
+          created_object_id
         end
         
         def update(update_hash)
@@ -169,13 +281,16 @@ module RhoconnectAdapters
             next if (element_name == "Id" or element_name == 'id')
           
             field_value = update_hash[element_name]
-            if field_value != nil
-              request_fields[element_name] = field_value
+            next unless field_value != nil
+            # special case for Datetime types - they need to 
+            # be converted to W3C XML trailing Z
+            if element_def['Type'] == 'datetime'
+              field_value = Date.parse(field_value).strftime '%Y-%m-%dT%H:%M:%S.000Z'
             end
+            request_fields[element_name] = field_value
           end
           
           requesturl = @resturl + "/sobjects/#{crm_object}/#{updated_object_id}?_HttpMethod=PATCH"
-
           RestClient.post(requesturl, request_fields.to_json, @postheaders)
           updated_object_id
         end
