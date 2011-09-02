@@ -1,0 +1,14 @@
+Account:
+  Name: ACME Co.
+  Type: Customer - Channel
+  Industry: Chemicals
+  Ownership: Public
+  AnnualRevenue: 500000
+  NumberOfEmployees: 450
+  Phone: 650-111-1111
+  Website: www.acme.com
+  BillingStreet: 2020 San Fernardo Blvd.
+  BillingCity: Chicago
+  BillingState: IL
+  BillingPostalCode: 22222
+  BillingCountry: USA

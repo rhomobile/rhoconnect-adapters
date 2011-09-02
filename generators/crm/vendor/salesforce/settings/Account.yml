@@ -1,0 +1,53 @@
+Query_Fields:
+    # This is just a sample list of fields 
+    # that are used in Query request
+    Id:
+        Label: Id
+        Type: id
+    Name:
+        Label: Account Name
+        Type: textinput
+    Type:
+        Label: Account Type
+        Type: Picklist
+    Industry:
+        Label: Industry
+        Type: Picklist
+    Ownership:
+        Label: Ownership
+        Type: Picklist
+    AnnualRevenue:
+        Label: Annual Revenue
+        Type: textinput
+    NumberOfEmployees:
+        Label: Number Of Employees
+        Type: textinput
+    Phone:
+        Label: Phone
+        Type: textinput
+    Website:
+        Label: Website
+        Type: textinput
+    BillingStreet:
+        Label: Billing Street
+        Type: textinput
+    BillingCity:
+        Label: Billing City
+        Type: textinput
+    BillingState:
+        Label: Billing State
+        Type: textinput
+    BillingPostalCode:
+        Label: Billing Postal Code
+        Type: textinput
+    BillingCountry:
+        Label: Billing Country
+        Type: textinput
+
+ObjectFields:
+    # these are reference fields to the other objects
+
+TitleFields:
+    # these fields are concatenated to show the record
+    # in the Index form
+    - Name

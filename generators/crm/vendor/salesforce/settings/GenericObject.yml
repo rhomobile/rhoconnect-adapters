@@ -1,0 +1,13 @@
+Query_Fields:
+    # This is just a sample list of fields 
+    # that are used in Query request
+    Id:
+        Label: Id
+        Type: id
+
+ObjectFields:
+    # these are reference fields to the other objects
+
+TitleFields:
+    # these fields are concatenated to show the record
+    # in the Index form
