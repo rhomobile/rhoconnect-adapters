@@ -29,7 +29,7 @@ Currently, the following CRM backends are supported:
 
    - OracleOnDemand (for [Oracle CRM On Demand](http://crmondemand.oracle.com))
    - MsDynamics (for [Microsoft Dynamics CRM](http://www.microsoft.com/en-us/dynamics/default.aspx))
-   - Salesfoce (for [Salesforce CRM](http://www.salesforce.com/))
+   - Salesforce (for [Salesforce CRM](http://www.salesforce.com/))
    - Sugar (for [Sugar CRM](http://www.sugarcrm.com/crm/))
 
 The generated Rhoconnect CRM application structure will include typical [RhoConnect](http://rhomobile.com/products/rhoconnect/)
