@@ -29,7 +29,8 @@ Currently, the following CRM backends are supported:
 
    - OracleOnDemand (for [Oracle CRM On Demand](http://crmondemand.oracle.com))
    - MsDynamics (for [Microsoft Dynamics CRM](http://www.microsoft.com/en-us/dynamics/default.aspx))
-   - Sugar (for [Sugar CRM](http://http://www.sugarcrm.com/crm/))
+   - Salesfoce (for [Salesforce CRM](http://www.salesforce.com/))
+   - Sugar (for [Sugar CRM](http://www.sugarcrm.com/crm/))
 
 The generated Rhoconnect CRM application structure will include typical [RhoConnect](http://rhomobile.com/products/rhoconnect/)
 files (for example, application.rb and settings.yml). It will also create a special vendor directory `vendor/\<CRM\-backend\>`
@@ -187,6 +188,43 @@ For the default generated CRM object adapters, this file is pre-filled with info
 options. For custom adapters, you need to fill this file with relevant information. List of object's fields, for example, can be obtained
 from the SugarCRM documentation and then later used to fill the Query_Fields setting. Alternatively, user can customize the adapter and obtain 
 the desired list of object's fields using the SugarCRM REST API.
+
+### Salesforce settings
+All Salesforce-specific settings are located in the `vendor/salesforce/settings` directory.
+In the file `settings.yml` you'll find the entries that you must customize before running the app.
+These are:
+
+- **:salesforce_login_url:** <salesforce_soap_login_url> - Currently, this parameter is pre-defined to 
+`https://login.salesforce.com/services/Soap/c/22.0` for simple SOAP web service authentication. 
+Rhoconnect-adapters is not using `OAuth2` scheme at this point.
+
+For every source adapter based on CRM object there is a corresponding *'vendor/salesforce/settings/\<CRM\-object\-name\>.yml'*
+file containing the descriptions for the OracleOnDemand CRM object.
+Every CRM object file has the following entries:
+
+	Query_Fields: hash of the objects's fields 
+			(each field's element has the value 
+			 in a form of the hash with the field's options , 
+			containing the following data):
+      	Label => <val> - display name of the field
+      	Type => <val> - type of the field data 
+			(textinput, textarea, Picklist, datetime, id, etc.)
+			
+	ObjectFields: this one specifies a hash of fields 
+			that are actually references to other objects. 
+         	For example, AccountId field for Contact object 
+			is really a reference to the corresponding Account object.'
+	
+	TitleFields: this setting specifies an array of fields
+				used in constructing the object's title in the 'Show' page
+				using the Metadata method. Typically, you will want to put 
+				`name` fields in here.
+
+For the default generated CRM object adapters, this file is pre-filled with sample information. However, you can customize it by including or excluding
+different fields. For custom adapters, you need to fill this file with relevant information. List of object's fields, for example, can be obtained
+from the Salesforce documentation and then later used to fill the Query_Fields setting. Alternatively, user can customize the adapter and obtain 
+the list of fields using the `/sobjects/\<CRM\-object\-name\>/describe/` API.
+
 
 ## Running the CRM Application
 Once your Rhoconnect application is customized and ready to run, you can start it like any other Rhoconnect app.

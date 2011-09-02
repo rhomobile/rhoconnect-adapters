@@ -1,6 +1,6 @@
 require 'rhoconnect-adapters'
 require 'rhoconnect-adapters/soap_service'
-require 'active_support'
+require 'active_support/core_ext'
 
 module RhoconnectAdapters
   module CRM
