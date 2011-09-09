@@ -1,8 +1,8 @@
 :test: 
-  :oraclecrm_service_url: https://secure-ausomxkwa.crmondemand.com/Services/Integration
+  :oraclecrm_service_url: https://secure-vmsomxmja.crmondemand.com/Services/Integration
 :production: 
-  :oraclecrm_service_url: https://secure-ausomxkwa.crmondemand.com/Services/Integration
+  :oraclecrm_service_url: https://secure-vmsomxmja.crmondemand.com/Services/Integration
 :development: 
-  :oraclecrm_service_url: https://secure-ausomxkwa.crmondemand.com/Services/Integration
+  :oraclecrm_service_url: https://secure-vmsomxmja.crmondemand.com/Services/Integration
 
 

@@ -217,7 +217,7 @@ module RhoconnectAdapters
           super
         end
 
-        def create(create_hash,blob=nil)
+        def create(create_hash)
           new_obj = get_module.new
           attributes = new_obj.attributes
           copy_keys_to_obj(create_hash, new_obj)
