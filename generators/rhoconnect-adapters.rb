@@ -187,6 +187,11 @@ module RhoconnectAdapters
           envs[env] = settings[env]
         end
         file.write envs.to_yaml[3..-1]
+        # write all other settings
+        [:development, :test, :production, :sources].each do |key|
+          settings.delete(key)
+        end
+        file.write settings.to_yaml[3..-1] unless settings.empty?
       end
     end
     template :source_spec do |template|

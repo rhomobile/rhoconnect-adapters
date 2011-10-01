@@ -209,7 +209,7 @@ module RhoconnectAdapters
           { 'index' => index_form, 'show' => show_form, 'new' => new_form, 'edit' => edit_form }.to_json
         end
       
-        def create(create_hash,blob=nil)
+        def create(create_hash)
           # TODO: Create a new record in your backend data source
           # If your rhodes rhom object contains image/binary data 
           # (has the image_uri attribute), then a blob will be provided
