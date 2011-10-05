@@ -44,24 +44,28 @@ module RhoconnectAdapters
         def get_picklists
           begin 
             already_described = Store.get_value("#{crm_object}:already_described")
-            return if already_described
-            
             # call describe method to retrieve the object's metadata
-            request_url = "#{@resturl}/sobjects/#{crm_object}/describe/"
-            parsed = JSON.parse(RestClient.get(request_url, @restheaders).body)
-            parsed["fields"].each do |field|
-              element_name = field['name']
+            if not already_described
+              request_url = "#{@resturl}/sobjects/#{crm_object}/describe/"
+              parsed = JSON.parse(RestClient.get(request_url, @restheaders).body)
+              parsed["fields"].each do |field|
+                element_name = field['name']
               
-              #puts " we have field #{element_name}"
-              #puts " picklist values are : #{field["picklistValues"].inspect}"
-              
-              next unless fields[element_name] != nil
-              data_type = fields[element_name]['Type']
-              if data_type == 'Picklist' and not @field_picklists.has_key?(element_name)
-                @field_picklists[element_name] = get_picklist(element_name, field)
+                next unless fields[element_name] != nil
+                data_type = fields[element_name]['Type']
+                if data_type == 'Picklist' and not @field_picklists.has_key?(element_name)
+                  @field_picklists[element_name] = get_picklist(element_name, field)
+                end
               end
-            end
-            Store.put_value("#{crm_object}:already_described", true)    
+              Store.put_value("#{crm_object}:already_described", true)
+            # object is already described - data should be in the Store
+            else
+              fields.each do |element_name, element_def|
+                if element_def['Type'] == 'Picklist' and not @field_picklists.has_key?(element_name)
+                  @field_picklists[element_name] = Store.get_data("#{crm_object}:#{element_name}_picklist",Array)
+                end
+              end
+            end 
           rescue RestClient::Exception => e
             raise e
           end
@@ -163,7 +167,7 @@ module RhoconnectAdapters
               values = []
               # make first element a blank value
               values[0] = nil
-              values.concat @field_picklists[element_name]
+              values.concat @field_picklists[element_name] if @field_picklists[element_name]
               new_field[:values] = values
               new_field[:value] = values[0]
             when 'object'
