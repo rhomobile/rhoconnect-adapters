@@ -1,4 +1,7 @@
-## 0.1.0
+## 1.0.1
+* #19265087 - sync throws exceptions in Salesforce app
 
+## 1.0.0
+* Integration of Salesforce, MsDynamics, Sugar backends
 * #15178091 - Integration of OracleCRM backend, specs for generator
 * #14613211 - Initial creation of the rhoconnect-adapters
