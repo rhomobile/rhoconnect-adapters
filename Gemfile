@@ -6,15 +6,17 @@ gem 'rake'
 
 group :test do
   gem 'sqlite3', ">= 1.3.3", :platforms => [:ruby, :mswin, :mingw]
-  gem 'rspec', '~> 2.6.0'
-  gem 'rcov', '>= 0.9.8'
+  gem 'rspec', '~> 2.9.0'
   gem 'sugarcrm', '>= 0.9.15'
+  gem "rcov", '~> 1.0.0', :require => false, :platforms => :ruby_18
+  gem 'simplecov', :require => false, :platforms => [:ruby_19,:jruby]
 end
 
 group :development do
   gem 'sqlite3', ">= 1.3.3", :platforms => [:ruby, :mswin, :mingw]
-  gem 'rspec', '~> 2.6.0'
-  gem 'rcov', '>= 0.9.8'
+  gem 'rspec', '~> 2.9.0'
   gem 'sugarcrm', '>= 0.9.15'
+  gem "rcov", '~> 1.0.0', :require => false, :platforms => :ruby_18
+  gem 'simplecov', :require => false, :platforms => [:ruby_19,:jruby]
 end
 

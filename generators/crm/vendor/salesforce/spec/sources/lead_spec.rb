@@ -1,7 +1,7 @@
 require File.join(File.dirname(__FILE__),'..','spec_helper')
 
 describe "Lead" do
-  it_should_behave_like "SpecHelper" do
+  it_behaves_like "SpecHelper" do
   
     before(:each) do
       sample_data_file = File.join(File.dirname(__FILE__),'..','..','vendor','salesforce','spec_data','Lead.yml')

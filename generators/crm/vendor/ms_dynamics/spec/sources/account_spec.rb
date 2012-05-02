@@ -1,7 +1,7 @@
 require File.join(File.dirname(__FILE__),'..','spec_helper')
 
 describe "Account" do
-  it_should_behave_like "SpecHelper" do
+  it_behaves_like "SpecHelper" do
     before(:each) do
       sample_data_file = File.join(File.dirname(__FILE__),'..','..','vendor','ms_dynamics','spec_data','Account.yml')
       @sample_data = YAML.load_file(sample_data_file)['Account'] if sample_data_file and File.exist?(sample_data_file)

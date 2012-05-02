@@ -1,3 +1,4 @@
+$:.unshift File.join(File.dirname(__FILE__))
 require 'vendor/<%=underscore_crm%>/application'
 
 class Application < RhoconnectAdapters::CRM::<%=crm_name%>::Application
@@ -32,3 +33,15 @@ class Application < RhoconnectAdapters::CRM::<%=crm_name%>::Application
 end
 
 Application.initializer(ROOT_PATH)
+
+# Support passenger smart spawning/fork mode:
+if defined?(PhusionPassenger)
+  PhusionPassenger.on_event(:starting_worker_process) do |forked|
+    if forked
+      # We're in smart spawning mode.
+      Store.db.client.reconnect
+    else
+      # We're in conservative spawning mode. We don't need to do anything.
+    end
+  end
+end

@@ -1,7 +1,7 @@
 require File.join(File.dirname(__FILE__),'..','spec_helper')
 
 describe "<%=class_name%>" do
-  it_should_behave_like "SpecHelper" do
+  it_behaves_like "SpecHelper" do
     before(:each) do
       setup_test_for <%=class_name%>,'testuser'
     end
