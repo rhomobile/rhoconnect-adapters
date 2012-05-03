@@ -10,8 +10,8 @@ TYPES = {
   :ms => 'spec/apps/ms_dynamics*_spec.rb',
   :salesforce => 'spec/apps/salesforce*_spec.rb',
 #  not officially supported - can not be tested
-  :oracle => 'spec/apps/oracle_on_demand*_spec.rb',
-  :sugar => 'spec/apps/sugar*_spec.rb'
+#  :oracle => 'spec/apps/oracle_on_demand*_spec.rb',
+#  :sugar => 'spec/apps/sugar*_spec.rb'
 }
 
 TYPES.each do |type,files|

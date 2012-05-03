@@ -1,0 +1,6 @@
+:test: 
+  :salesforce_login_url: https://login.salesforce.com/services/Soap/c/22.0
+:production: 
+  :salesforce_login_url: https://login.salesforce.com/services/Soap/c/22.0
+:development:
+  :salesforce_login_url: https://login.salesforce.com/services/Soap/c/22.0

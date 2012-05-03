@@ -150,6 +150,29 @@ module RhoconnectAdapters
           RhoconnectAdapters.run_cli(File.join(destination_root,name), 'rhoconnect-adapters', RhoconnectAdapters::VERSION, ['crmsource', "#{source}", crm])
         end
       end
+      
+      # after everything is done - run 'bundle install' for the first time
+      install_gems_note = <<_BUNDLE_INSTALL_
+
+In the future, to ensure that all the dependencies in your rhoconnect application 
+are available execute these commands:
+      cd #{name} && bundle install
+
+If you're setting up the application in a production environment run the following:
+      cd #{name} && bundle install --without=test development
+
+_BUNDLE_INSTALL_
+
+      running_bundler_first_time = <<_RUN_BUNDLER
+
+Executing 'bundle install' for the first time in your freshly baked application!
+      cd #{destination_root}/#{name} && bundle install
+
+_RUN_BUNDLER
+
+      puts running_bundler_first_time
+      system("cd #{destination_root}/#{name} && bundle install")
+      puts install_gems_note
     end
   end
      

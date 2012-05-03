@@ -1,0 +1,48 @@
+Query_Fields:
+    # This is just a sample list of fields 
+    # that are used in Query request
+    Id:
+        Label: Id
+        Type: id
+    Name:
+        Label: Opportunity Name
+        Type: textinput
+    AccountId:
+        Label: Account Id
+        Type: object
+        Object: Account
+    StageName:
+        Label: Stage
+        Type: Picklist
+    Amount:
+        Label: Amount
+        Type: textarea
+    Probability:
+        Label: Probability
+        Type: textarea
+    CloseDate:
+        Label: Close Date
+        Type: datetime
+    Type:
+        Label: Opportunity Type
+        Type: Picklist
+    NextStep:
+        Label: Next Step
+        Type: textinput
+    LeadSource:
+        Label: Lead Source
+        Type: Picklist
+    Description:
+        Label: Description
+        Type: textarea
+    
+
+ObjectFields:
+    # these are reference fields to the other objects
+    AccountId:
+
+TitleFields:
+    # these fields are concatenated to show the record
+    # in the Index form
+    - Name
+
