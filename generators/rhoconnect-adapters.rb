@@ -166,12 +166,12 @@ _BUNDLE_INSTALL_
       running_bundler_first_time = <<_RUN_BUNDLER
 
 Executing 'bundle install' for the first time in your freshly baked application!
-      cd #{destination_root}/#{name} && bundle install
+      bundle install --gemfile=#{destination_root}/#{name}/Gemfile
 
 _RUN_BUNDLER
 
       puts running_bundler_first_time
-      system("cd #{destination_root}/#{name} && bundle install")
+      system("bundle install --gemfile=#{destination_root}/#{name}/Gemfile")
       puts install_gems_note
     end
   end

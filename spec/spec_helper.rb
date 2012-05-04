@@ -48,7 +48,9 @@ module RhoconnectAdapters
 
           generator = RhoconnectAdapters::CRMAppGenerator.new(destination_root,options,appname,backend)
           generator.invoke!
-          generator.after_run
+          Bundler.with_clean_env do
+            generator.after_run
+          end
           generator
         end
       end
