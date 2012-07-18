@@ -1,5 +1,8 @@
 ## 1.0.4
-* support for rhoconnect >= 3.2.1
+* support for rhoconnect ~> 3.3.1.beta
+
+## 1.0.3
+* support for rhoconnect ~> 3.2.1
 
 ## 1.0.3.beta3
 * support for rhoconnect ~> 3.2.0.beta
