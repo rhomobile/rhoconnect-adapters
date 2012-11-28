@@ -43,7 +43,7 @@ module RhoconnectAdapters
         def get_object_settings
           return @object_settings if @object_settings
           begin
-            @object_settings = RhoconnectAdapters::CRM::Field.load_file(File.join(ROOT_PATH,'vendor','ms_dynamics','settings',"#{crm_object.downcase}.yml"))
+            @object_settings = RhoconnectAdapters::CRM::Field.load_file(File.join(ROOT_PATH,'vendor','ms_dynamics','settings',"#{crm_object}.yml"))
           rescue Exception => e
             puts "Error opening CRMObjects settings file: #{e}"
             puts e.backtrace.join("\n")

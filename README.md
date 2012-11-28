@@ -123,7 +123,7 @@ These are:
 - **:msdynamics_ticket_url:** <msdynamics_web_services_integration_url> - substitute the default URL with your MsDynamics account URL.
 
 For every source adapter based on CRM object there is a corresponding *'vendor/msdynamics/settings/\<CRM\-object\-name\>.yml'*
-file containing the descriptions for the Sugar CRM object.
+file containing the descriptions for the MsDynamics object.
 Every CRM object file has the following entries:
 
 	Query_Fields: hash of the objects's fields 
@@ -199,7 +199,7 @@ In the file `settings.yml` you'll find the entries that you must customize befor
 These are:
 
 - **:salesforce_login_url:** <salesforce_soap_login_url> - Currently, this parameter is pre-defined to 
-`https://login.salesforce.com/services/Soap/c/22.0` for simple SOAP web service authentication. 
+`https://login.salesforce.com/services/Soap/c/24.0` for simple SOAP web service authentication.
 Rhoconnect-adapters is not using `OAuth2` scheme at this point.
 
 For every source adapter based on CRM object there is a corresponding *'vendor/salesforce/settings/\<CRM\-object\-name\>.yml'*
