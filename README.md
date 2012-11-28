@@ -231,7 +231,7 @@ the list of fields using the `/sobjects/<CRM-object-name>/describe/` API.
 
 ## If you have large dataset on backend
 If your application's model has a lot of data, when you might wanted to paginate through backend service data instead of fetching everything in one call. RhoConnect API provides 
-[ `stash_result`](http://edgedocs.rhomobile.com/rhoconnect/source-adapters#source-adapter-api) method to do it.
+[ `stash_result`](http://docs.rhomobile.com/rhoconnect/source-adapters#source-adapter-api) method to do it.
 
 For example, straightforward way to query data in Salesforce CRM adapter is  
 
