@@ -104,6 +104,9 @@ module RhoconnectAdapters
         end
 
         def query(params=nil)
+          #
+          # Straightforward way to query data. Dot not fit for large result sets.
+          #
           # @result = {}
           # conditions = {:conditions=>{}}
           # conditions[:conditions][:assigned_user_id] = @namespace.current_user.id

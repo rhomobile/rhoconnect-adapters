@@ -89,14 +89,7 @@ module RhoconnectAdapters
         end
       
         def query(params=nil)
-          # TODO: Query your backend data source and assign the records 
-          # to a nested hash structure called @result. For example:
-          # @result = { 
-          #   "1"=>{"name"=>"Acme", "industry"=>"Electronics"},
-          #   "2"=>{"name"=>"Best", "industry"=>"Software"}
-          # }
-          @result = {}
-        
+          @result = {}        
           attributes = []
           # strip out artificial 'attrtype' fields
           fields.each do |key, val|
