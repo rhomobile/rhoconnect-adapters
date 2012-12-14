@@ -27,10 +27,10 @@ Gem::Specification.new do |s|
   ]
 
   s.add_dependency('bundler', '~> 1.0')  
-  s.add_dependency('rhoconnect', '>= 3.2')
+  s.add_dependency('rhoconnect', '>= 3.4')
   s.add_dependency('activesupport', '>= 3.0.9')
   s.add_dependency('i18n', '>= 0.6.0')
-  s.add_dependency('rake', '~> 0.9.2.2')
-  s.add_dependency('nokogiri', '>= 1.4.6')
+  s.add_dependency('rake', '~> 10.0')
+  s.add_dependency('nokogiri', '~> 1.5')
   s.add_dependency('templater', '~> 1.0.0')
 end

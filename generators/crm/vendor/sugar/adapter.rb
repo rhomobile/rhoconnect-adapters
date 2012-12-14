@@ -104,12 +104,31 @@ module RhoconnectAdapters
         end
 
         def query(params=nil)
-          @result = {}
+          #
+          # Straightforward way to query data. Dot not fit for large result sets.
+          #
+          # @result = {}
+          # conditions = {:conditions=>{}}
+          # conditions[:conditions][:assigned_user_id] = @namespace.current_user.id
+          # results = get_results(conditions)
+          # @result = create_result_hash(results)
+
+          # Use stash_result to paginate into result sets
           conditions = {:conditions=>{}}
           conditions[:conditions][:assigned_user_id] = @namespace.current_user.id
-          results = get_results(conditions)
-        
-          @result = create_result_hash(results)
+          offset, page_sz = 0, 100
+          conditions[:limit] = page_sz
+
+          loop do
+            conditions[:offset] = offset
+            results = get_results(conditions)
+            @result = create_result_hash(results)
+            rec_num = @result.size
+            stash_result
+
+            break if rec_num < page_sz
+            offset += page_sz
+          end
         end
       
         def metadata

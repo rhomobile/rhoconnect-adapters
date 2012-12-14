@@ -180,41 +180,65 @@ module RhoconnectAdapters
         end  
 
         def query(params=nil)
-          # TODO: Query your backend data source and assign the records 
-          # to a nested hash structure called @result. For example:
-          # @result = { 
-          #   "1"=>{"name"=>"Acme", "industry"=>"Electronics"},
-          #   "2"=>{"name"=>"Best", "industry"=>"Software"}
-          # }
-          @result = {}
+          #
+          # Straightforward way to query data. Dot not fit for large result sets.
+          #
+          # @result = {}
+          # fetch_more = 'true'
+          # start_row = 0
+          # begin 
+          #   soap_body = "<wsdl:ListOf#{crm_object} recordcountneeded=\"true\" pagesize=\"100\" startrownum=\"#{start_row.to_s}\">
+          #     <wsdl:#{crm_object} searchspec=\"\">
+          #       #{Adapter.get_columns(fields)}
+          #     </wsdl:#{crm_object}>
+          #   </wsdl:ListOf#{crm_object}>"
+          # 
+          #   query_results = execute_soap_action('QueryPage', soap_body)
+          #   fetch_more = query_results['lastpage'] == 'true' ? false : true;
+          # 
+          #   query_results.children.each do |record|
+          #     if record.name == "#{crm_object}"
+          #        id_field = RhoconnectAdapters::SoapService.select_node_text(record, "#{crm_object}doc:Id")
+          #        converted_record = {}
+          #        # grab only the allowed fields 
+          #        fields.each do |element_name,element_def|
+          #          converted_record[element_name] = RhoconnectAdapters::SoapService.select_node_text(record, "#{crm_object}doc:#{element_name}")
+          #        end
+          #        @result[id_field] = converted_record
+          #     end
+          #   end
+          #   start_row = @result.size
+          # end while fetch_more
+          # @result
+                              
+          # Use stash_result instead of accumulating output in @result in every loop
           fetch_more = 'true'
           start_row = 0
           begin 
-          
             soap_body = "<wsdl:ListOf#{crm_object} recordcountneeded=\"true\" pagesize=\"100\" startrownum=\"#{start_row.to_s}\">
-              <wsdl:#{crm_object} searchspec=\"\">
-                #{Adapter.get_columns(fields)}
-              </wsdl:#{crm_object}>
+               <wsdl:#{crm_object} searchspec=\"\">
+                 #{Adapter.get_columns(fields)}
+               </wsdl:#{crm_object}>
             </wsdl:ListOf#{crm_object}>"
-
             query_results = execute_soap_action('QueryPage', soap_body)
             fetch_more = query_results['lastpage'] == 'true' ? false : true;
-          
+
+            @result ||= {}
             query_results.children.each do |record|
               if record.name == "#{crm_object}"
-                 id_field = RhoconnectAdapters::SoapService.select_node_text(record, "#{crm_object}doc:Id")
-                 converted_record = {}
-                 # grab only the allowed fields 
-                 fields.each do |element_name,element_def|
-                   converted_record[element_name] = RhoconnectAdapters::SoapService.select_node_text(record, "#{crm_object}doc:#{element_name}")
-                 end
-                 @result[id_field] = converted_record
-               end
-             end
-             start_row = @result.size
-           end while fetch_more
-           @result
-         end
+                id_field = RhoconnectAdapters::SoapService.select_node_text(record, "#{crm_object}doc:Id")
+                converted_record = {}
+                # grab only the allowed fields
+                fields.each do |element_name,element_def|
+                  converted_record[element_name] = RhoconnectAdapters::SoapService.select_node_text(record, "#{crm_object}doc:#{element_name}")
+                end
+                @result[id_field] = converted_record
+              end
+            end
+            stash_result
+            start_row = @result.size
+          end while fetch_more
+        end
           
         def sync
           # Manipulate @result before it is saved, or save it 

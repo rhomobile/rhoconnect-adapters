@@ -29,7 +29,7 @@ module RhoconnectAdapters
               # here, requestUrl is formatted for SOAP requests
               # and we removing Soap part for it (which is suffix after services)
               # since we will user REST after that
-              endpoint_url = res_hash['serverUrl'].split('services')[0] + 'services/data/v22.0'
+              endpoint_url = res_hash['serverUrl'].split('services')[0] + 'services/data/v24.0'
               
               # store password to be used by SourceAdaptors
               Store.put_value("#{username}:session_id", session_id)

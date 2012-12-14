@@ -123,7 +123,7 @@ These are:
 - **:msdynamics_ticket_url:** <msdynamics_web_services_integration_url> - substitute the default URL with your MsDynamics account URL.
 
 For every source adapter based on CRM object there is a corresponding *'vendor/msdynamics/settings/\<CRM\-object\-name\>.yml'*
-file containing the descriptions for the Sugar CRM object.
+file containing the descriptions for the MsDynamics object.
 Every CRM object file has the following entries:
 
 	Query_Fields: hash of the objects's fields 
@@ -199,7 +199,7 @@ In the file `settings.yml` you'll find the entries that you must customize befor
 These are:
 
 - **:salesforce_login_url:** <salesforce_soap_login_url> - Currently, this parameter is pre-defined to 
-`https://login.salesforce.com/services/Soap/c/22.0` for simple SOAP web service authentication. 
+`https://login.salesforce.com/services/Soap/c/24.0` for simple SOAP web service authentication.
 Rhoconnect-adapters is not using `OAuth2` scheme at this point.
 
 For every source adapter based on CRM object there is a corresponding *'vendor/salesforce/settings/\<CRM\-object\-name\>.yml'*
@@ -229,6 +229,73 @@ different fields. For custom adapters, you need to fill this file with relevant 
 from the Salesforce documentation and then later used to fill the Query_Fields setting. Alternatively, user can customize the adapter and obtain 
 the list of fields using the `/sobjects/<CRM-object-name>/describe/` API.
 
+## If you have large dataset on backend
+If your application's model has a lot of data, when you might wanted to paginate through backend service data instead of fetching everything in one call. RhoConnect API provides 
+[ `stash_result`](http://docs.rhomobile.com/rhoconnect/source-adapters#source-adapter-api) method to do it.
+
+For example, straightforward way to query data in Salesforce CRM adapter is  
+
+    :::ruby
+	def query(params=nil)
+  	  @result = {}
+  	  fieldquery = ""
+  	  @fields.each do |element_name, element_def|
+        fieldquery << ",#{element_name}"
+  	  end
+      fieldquery[0] = " "
+  
+      querystr = "SELECT #{fieldquery} FROM #{crm_object}"
+      requesturl = @resturl + "/query/?q=" + CGI::escape(querystr)
+      raw_data = RestClient.get(requesturl, @restheaders)
+      parsed_data = JSON.parse raw_data
+  
+      if parsed_data['done']
+        parsed_data["records"].each do |record|
+          record_hash = {}
+          @fields.each do |element_name, element_def|
+            record_hash[element_name] = record[element_name]
+          end
+          @result[record['Id']] = record_hash
+        end
+      else
+        # TODO: queryMore
+      end
+      @result
+    end 
+
+In the case, if you wanted paginate through backend data the same `query` method should be rewritten as 
+
+    :::ruby
+    def query(params=nil)
+      fieldquery = ""
+      @fields.each do |element_name, element_def|
+        fieldquery << ",#{element_name}"
+      end
+      fieldquery[0] = " "
+
+      # Paginate into (large) result sets staring with offset = 0 and page_sz = 100
+      offset, page_sz = 0, 100
+      loop do
+        querystr = "SELECT #{fieldquery} from #{crm_object} limit #{page_sz} offset #{offset}"
+        requesturl = @resturl + "/query/?q=" + CGI::escape(querystr)
+        raw_data = RestClient.get(requesturl, @restheaders)
+        parsed_data = JSON.parse raw_data
+
+        @result ||= {}
+        parsed_data["records"].each do |record|
+          record_hash = {}
+          @fields.each do |element_name, element_def|
+            record_hash[element_name] = record[element_name]
+          end
+          @result[record['Id']] = record_hash
+        end
+        stash_result # => @result is nil now
+        break if parsed_data['done']
+        offset += page_sz
+      end
+    end
+
+`rhoconnect-adapters` gem provides reference implementation of paginating in `query` method for Sugar, Salesforce, and OracleOnDemand adapters.
 
 ## Running the CRM Application
 Once your Rhoconnect application is customized and ready to run, you can start it like any other Rhoconnect app.

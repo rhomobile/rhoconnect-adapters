@@ -43,7 +43,7 @@ module RhoconnectAdapters
         def get_object_settings
           return @object_settings if @object_settings
           begin
-            @object_settings = RhoconnectAdapters::CRM::Field.load_file(File.join(ROOT_PATH,'vendor','ms_dynamics','settings',"#{crm_object.downcase}.yml"))
+            @object_settings = RhoconnectAdapters::CRM::Field.load_file(File.join(ROOT_PATH,'vendor','ms_dynamics','settings',"#{crm_object}.yml"))
           rescue Exception => e
             puts "Error opening CRMObjects settings file: #{e}"
             puts e.backtrace.join("\n")
@@ -89,14 +89,7 @@ module RhoconnectAdapters
         end
       
         def query(params=nil)
-          # TODO: Query your backend data source and assign the records 
-          # to a nested hash structure called @result. For example:
-          # @result = { 
-          #   "1"=>{"name"=>"Acme", "industry"=>"Electronics"},
-          #   "2"=>{"name"=>"Best", "industry"=>"Software"}
-          # }
-          @result = {}
-        
+          @result = {}        
           attributes = []
           # strip out artificial 'attrtype' fields
           fields.each do |key, val|

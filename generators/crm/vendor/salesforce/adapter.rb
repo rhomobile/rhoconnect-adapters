@@ -33,7 +33,7 @@ module RhoconnectAdapters
         def get_object_settings
           return @object_settings if @object_settings
           begin
-            @object_settings = RhoconnectAdapters::CRM::Field.load_file(File.join(ROOT_PATH,'vendor','salesforce','settings',"#{crm_object.downcase}.yml"))
+            @object_settings = RhoconnectAdapters::CRM::Field.load_file(File.join(ROOT_PATH,'vendor','salesforce','settings',"#{crm_object}.yml"))
           rescue Exception => e
             puts "Error opening CRMObjects settings file: #{e}"
             puts e.backtrace.join("\n")
@@ -105,13 +105,33 @@ module RhoconnectAdapters
         end
       
         def query(params=nil)
-          # TODO: Query your backend data source and assign the records 
-          # to a nested hash structure called @result. For example:
-          # @result = { 
-          #   "1"=>{"name"=>"Acme", "industry"=>"Electronics"},
-          #   "2"=>{"name"=>"Best", "industry"=>"Software"}
-          # }
-          @result = {}
+          #
+          # Straightforward way to query data. Dot not fit for large result sets.
+          #
+          # @result = {}
+          # fieldquery = ""
+          # @fields.each do |element_name, element_def|
+          #   fieldquery << ",#{element_name}"
+          # end
+          # fieldquery[0] = " "
+          #
+          # querystr = "SELECT #{fieldquery} FROM #{crm_object}"
+          # requesturl = @resturl + "/query/?q=" + CGI::escape(querystr)
+          # raw_data = RestClient.get(requesturl, @restheaders)
+          # parsed_data = JSON.parse raw_data
+          #
+          # if parsed_data['done']
+          #   parsed_data["records"].each do |record|
+          #     record_hash = {}
+          #     @fields.each do |element_name, element_def|
+          #       record_hash[element_name] = record[element_name]
+          #     end
+          #     @result[record['Id']] = record_hash
+          #   end
+          # else
+          #   # TODO: queryMore
+          # end
+          # @result
 
           fieldquery = ""
           @fields.each do |element_name, element_def|
@@ -119,23 +139,28 @@ module RhoconnectAdapters
           end
           fieldquery[0] = " "
 
-          querystr = "SELECT #{fieldquery} from #{crm_object}"
+          # Paginate into (large) result sets staring with offset = 0 and page_sz = 100
+          offset, page_sz = 0, 100
+          loop do
+            querystr = "SELECT #{fieldquery} from #{crm_object} limit #{page_sz} offset #{offset}"
+            requesturl = @resturl + "/query/?q=" + CGI::escape(querystr)
+            raw_data = RestClient.get(requesturl, @restheaders)
+            parsed_data = JSON.parse raw_data
 
-          requesturl = @resturl + "/query/?q=" + CGI::escape(querystr)
-          raw_data = RestClient.get(requesturl, @restheaders)
-          parsed_data = JSON.parse raw_data
-
-          parsed_data["records"].each do |record|
-            record_hash = {}
-            @fields.each do |element_name, element_def|
-              record_hash[element_name] = record[element_name]
+            @result ||= {}
+            parsed_data["records"].each do |record|
+              record_hash = {}
+              @fields.each do |element_name, element_def|
+                record_hash[element_name] = record[element_name]
+              end
+              @result[record['Id']] = record_hash
             end
-            @result[record['Id']] = record_hash
+            stash_result # => @result is nil now
+            break if parsed_data['done']
+            offset += page_sz
           end
-          
-          @result
         end
-      
+
         def metadata
           # define the metadata
           show_fields = []
