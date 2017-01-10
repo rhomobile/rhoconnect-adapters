@@ -4,12 +4,13 @@ require "rhoconnect-adapters/version"
 
 Gem::Specification.new do |s|
   s.name        = "rhoconnect-adapters"
-  s.version     = RhoconnectAdapters::VERSION
+  #s.version     = RhoconnectAdapters::VERSION
+  s.version = File.read('version').chomp
   s.platform    = Gem::Platform::RUBY
-  s.authors     = ["Rhomobile"]
+  s.authors = ['TAU Technologies']
   s.date        = Time.now.strftime('%Y-%m-%d')
-  s.email       = %q{dev@rhomobile.com}
-  s.homepage    = %q{http://rhomobile.com/products/rhoconnect-adapters}
+  s.email = 'info@tau-technologies.com'
+  s.homepage = 'http://tau-technologies.com/'
   s.summary     = %q{Rhoconnect adapters}
   s.description = %q{Rhoconnect out-of-the box adapters}
 
@@ -26,11 +27,11 @@ Gem::Specification.new do |s|
     "README.md"
   ]
 
-  s.add_dependency('bundler', '~> 1.0')  
-  s.add_dependency('rhoconnect', '>= 3.4')
-  s.add_dependency('activesupport', '>= 3.0.9')
-  s.add_dependency('i18n', '>= 0.6.0')
-  s.add_dependency('rake', '~> 10.0')
-  s.add_dependency('nokogiri', '~> 1.5')
-  s.add_dependency('templater', '~> 1.0.0')
+  s.add_dependency('bundler', '1.13.7')  
+  s.add_dependency('rhoconnect', '>= 5.5.2')
+  s.add_dependency('activesupport', '3.0.9')
+  s.add_dependency('i18n', '0.7.0')
+  s.add_dependency('rake', '10.4.0')
+  s.add_dependency('nokogiri', '1.6.8.1')
+  s.add_dependency('templater', '1.0.0')
 end
