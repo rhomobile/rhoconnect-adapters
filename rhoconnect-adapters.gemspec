@@ -27,7 +27,7 @@ Gem::Specification.new do |s|
     "README.md"
   ]
 
-  s.add_dependency('bundler', '1.17.3')
+  s.add_dependency('bundler', '~> 1.17.3')
   s.add_dependency('rhoconnect', '>= 5.5.0')
   s.add_dependency('activesupport', '3.0.9')
   s.add_dependency('i18n', '0.7.0')
